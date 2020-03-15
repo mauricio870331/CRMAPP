@@ -1,0 +1,20 @@
+Tablas crm_app
+Personas -> Leads , prospectos, etc.
+estados -> define si una persona es lead, cliente, suspendido, finalizado.
+estados_personas -> tabla intermedia que llevara el registro del usuario fecha y estado en el que esta para tener un control.
+notificaciones_personas -> en esta tabla se guardaran las notas que un asesor le ingrese a una persona
+usuarios -> Quienes ingresan a la app.
+tipo_usuario -> ASESOR-COACH-CUSTOMER;
+permisos_usuarios -> Crear , Leer, Actualizar, Eliminar
+
+productos
+
+
+Asesor crea Leads , sube documentos, recordatorios y productos ,etc, siguente paso, crear leads y navegar por estados
+
+}
+
+
+ciudad estado codigo postal
+
+para pasar de lead a cliente se le envia una solicitud  administrador  para pasar de lead a cliente
