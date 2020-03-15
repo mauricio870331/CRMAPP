@@ -90,6 +90,7 @@ session_start();
                                                 <th>Documento</th>
                                                 <th>Nombres</th>
                                                 <th>Apellidos</th>
+                                                <th>Tipo</th>
                                                 <!--<th>Foto</th>--> 
                                                 <th>Acciones</th>
                                             </tr>

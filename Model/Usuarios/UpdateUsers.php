@@ -6,11 +6,7 @@ $now = date('Y-m-d H:i:s');
 require_once '../BD.php';
 $con = new BD();
 //$ruta = "../archivos";
-$documento = $_POST['documento'];
-$nombres = $_POST['nombres'];
-$apellidos = $_POST['apellidos'];
-$pwd = $_POST['pwd'];
-$id = $_POST['id'];
+$coach = ($_POST['coach'] == "") ? 'NULL' : $_POST['coach'];
 $newFoto = "";
 if (isset($_FILES['foto']) && !empty($_FILES['foto'])) {
     $archivo = $_FILES['foto']['tmp_name'];
@@ -27,11 +23,17 @@ if (isset($_FILES['foto']) && !empty($_FILES['foto'])) {
     $foto = $temp;
     $newFoto = ", foto = '" . $foto . "',ext='" . $extension . "' ";
 }
-$sql2 = "update usuarios set documento = '" . trim($documento) . "', nombres = '" . trim($nombres) . "', apellidos = '" . trim($apellidos) . "', nombre_completo = '" . $nombres . " " . $apellidos . "',"
-        . " pwd = '" . $pwd . "', updated_at = '$now', create_by = " . $_SESSION['obj_user'][0]['id'] . $newFoto . " where id = " . $id;
 
-$res = $con->exec($sql2);
-if ($res > 0) {
+$SQL_UPDATE = "UPDATE usuarios set tipo_doc = " . $_POST['tipo_doc'] . " ,documento = '" . $_POST['documento'] . "',"
+        . "nombres = '" . $_POST['nombres'] . "',apellidos = '" . $_POST['apellidos'] . "',telefono = '" . $_POST['telefonos'] . "'"
+        . ",id_tipo_usuario = " . $_POST['id_tipo_usuario'] . ",coach = " . $coach . ",password = '" . $_POST['pass'] . "'" . $newFoto . " where id = " . $_POST['id'];
+
+
+
+$res = $con->exec($SQL_UPDATE);
+
+
+if ($res == 1) {
     echo json_encode("ok");
 } else {
     echo json_encode($res);

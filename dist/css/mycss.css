@@ -16,3 +16,11 @@
    width: 8% !important;
 }
 
+#showCoach{
+    display: none;
+}
+
+.coach{
+    margin-left: 5px !important;
+}
+

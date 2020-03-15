@@ -182,7 +182,7 @@ $(document).ready(function () {
     //Crear usuarios
     $("#CrearUsuarios").click(function () {
 
-        var campos = ['tipo_doc', 'documento', "nombres", 'apellidos', 'telefonos', 'tipo_usuario', "pass"];
+        var campos = ['tipo_doc', 'documento', 'nombres', 'apellidos', 'telefonos', 'tipo_user', 'pass'];
         var val = $('input:radio[name=isCoach]:checked').val();
         if (val == "Si") {
             campos[7] = "coach";
@@ -199,24 +199,32 @@ $(document).ready(function () {
         if (countErrors > 0) {
             showAlert("Los campos marcados en rojo son obligatorios..!", "danger");
         } else {
-            var data = {"tipo_doc": 0,
-                "documento": $("#documento").val(),
-                "nombres": $("#nombres").val(),
-                "apellidos": $("#apellidos").val(),
-                "telefonos": $("#telefonos").val(),
-                "id_tipo_usuario": $("#tipo_usuario").val(),
-                "coach": $("#coach").val(),
-                "pass": $("#pass").val()};
-
+            var data = new FormData();
+            var inputFile = document.getElementById("foto");
+            if (inputFile != null) {
+                var file = inputFile.files[0];
+                data.append("foto", file);
+            }
+            data.append("documento", $("#documento").val());
+            data.append("tipo_doc", $("#tipo_doc").val());
+            data.append("nombres", $("#nombres").val());
+            data.append("pass", $("#pass").val());
+            data.append("apellidos", $("#apellidos").val());
+            data.append("telefonos", $("#telefonos").val());
+            data.append("id_tipo_usuario", $("#tipo_user").val());
+            data.append("coach", $("#coach").val());
             $.ajax({
                 async: true,
                 type: "POST",
                 url: "../Model/Usuarios/AddUsers.php",
                 data: data,
                 dataType: "json",
+                contentType: false,
+                processData: false,
+                cache: false,
                 success: function (response)
                 {
-                    if (response == "ok") {
+                    if (response === "ok") {
                         setTimeout(redireccionarPagina('ListarUsuarios.php?mensaje=ok'), 5000);
                     } else {
                         showAlert("Ocurrio un error al actualizar la informaciòn", "error");
@@ -224,6 +232,86 @@ $(document).ready(function () {
                 }
             });
         }
+    });
+
+
+    //Actualizar usuarios
+    $("#ActualizarUsuarios").click(function () {
+
+        var campos = ['tipo_doc', 'documento', 'nombres', 'apellidos', 'telefonos', 'tipo_user', 'pass'];
+        var val = $('input:radio[name=isCoach]:checked').val();
+        if (val == "Si") {
+            campos[7] = "coach";
+        }
+        var countErrors = 0;
+        for (var item in campos) {
+            if ($("#" + campos[item]).val() === "") {
+                countErrors++;
+                $("#" + campos[item]).css("border", "1px solid red");
+            } else {
+                $("#" + campos[item]).css("border", "1px solid #d2d6de");
+            }
+        }
+
+        if (countErrors > 0) {
+            showAlert("Los campos marcados en rojo son obligatorios..!", "error");
+        } else {
+            var data = new FormData();
+            var inputFile = document.getElementById("foto");
+            if (inputFile != null) {
+                var file = inputFile.files[0];
+                data.append("foto", file);
+            }
+            data.append("documento", $("#documento").val());
+            data.append("tipo_doc", $("#tipo_doc").val());
+            data.append("nombres", $("#nombres").val());
+            data.append("pass", $("#pass").val());
+            data.append("apellidos", $("#apellidos").val());
+            data.append("telefonos", $("#telefonos").val());
+            data.append("id_tipo_usuario", $("#tipo_user").val());
+            data.append("coach", $("#coach").val());
+            data.append("id", $("#id").val());
+            $.ajax({
+                type: 'POST',
+                url: "../Model/Usuarios/UpdateUsers.php",
+                data: data,
+                dataType: 'json',
+                contentType: false,
+                processData: false,
+                cache: false,
+                success: function (response) {
+                    if (response === "ok") {
+                        setTimeout(redireccionarPagina('ListarUsuarios.php?mensaje=updateok'), 5000);
+                    } else {
+                        showAlert("Ocurrio un error al actualizar la informaciòn", "error");
+                    }
+                }
+            });
+        }
+    });
+    
+    
+    //Eliminar usuarios
+    
+     $("#deleteUser").click(function () {
+        var data = new FormData();
+        data.append("id", $(this).data("id"));
+        $.ajax({
+            type: 'POST',
+            url: "../Model/Usuarios/DeleteUsers.php",
+            data: data,
+            dataType: 'json',
+            contentType: false,
+            processData: false,
+            cache: false,
+            success: function (response) {
+                if (response == "ok") {
+                    setTimeout(redireccionarPagina('ListarUsuarios.php?mensaje=deleteok'), 5000);
+                } else {
+                    showAlert("Ocurrio un error al actualizar la informaciòn", "error");
+                }
+            }
+        });
     });
 
 
@@ -326,51 +414,7 @@ $(document).ready(function () {
 
 
     //Crear usuarios
-    $("#ActualizarUsuarios").click(function () {
 
-        campos = ['Documento', 'Nombres', 'Apellidos', 'pwd'];
-        var countErrors = 0;
-        for (var item in campos) {
-            if ($("#" + campos[item]).val() === "") {
-                countErrors++;
-                $("#" + campos[item]).css("border", "1px solid red");
-            } else {
-                $("#" + campos[item]).css("border", "1px solid #d2d6de");
-            }
-        }
-
-        if (countErrors > 0) {
-            showAlert("Los campos marcados en rojo son obligatorios..!", "error");
-        } else {
-            var data = new FormData();
-            var inputFile = document.getElementById("foto");
-            if (inputFile != null) {
-                var file = inputFile.files[0];
-                data.append("foto", file);
-            }
-            data.append("documento", $("#Documento").val());
-            data.append("nombres", $("#Nombres").val());
-            data.append("apellidos", $("#Apellidos").val());
-            data.append("pwd", $("#pwd").val());
-            data.append("id", $("#id").val());
-            $.ajax({
-                type: 'POST',
-                url: "Model/Usuarios/UpdateUsers.php",
-                data: data,
-                dataType: 'json',
-                contentType: false,
-                processData: false,
-                cache: false,
-                success: function (response) {
-                    if (response == "ok") {
-                        setTimeout(redireccionarPagina('ListarUsuarios.php?mensaje=updateok'), 5000);
-                    } else {
-                        showAlert("Ocurrio un error al actualizar la informaciòn", "error");
-                    }
-                }
-            });
-        }
-    });
 
     //Update propietarios
     $("#UpdatePropietarioVehiculo").click(function () {
@@ -424,26 +468,26 @@ $(document).ready(function () {
 
 
 
-    $("#deleteUser").click(function () {
-        var data = new FormData();
-        data.append("id", $(this).data("id"));
-        $.ajax({
-            type: 'POST',
-            url: "Model/Usuarios/DeleteUsers.php",
-            data: data,
-            dataType: 'json',
-            contentType: false,
-            processData: false,
-            cache: false,
-            success: function (response) {
-                if (response == "ok") {
-                    setTimeout(redireccionarPagina('ListarUsuarios.php?mensaje=deleteok'), 5000);
-                } else {
-                    showAlert("Ocurrio un error al actualizar la informaciòn", "error");
-                }
-            }
-        });
-    });
+//    $("#deleteUser").click(function () {
+//        var data = new FormData();
+//        data.append("id", $(this).data("id"));
+//        $.ajax({
+//            type: 'POST',
+//            url: "Model/Usuarios/DeleteUsers.php",
+//            data: data,
+//            dataType: 'json',
+//            contentType: false,
+//            processData: false,
+//            cache: false,
+//            success: function (response) {
+//                if (response == "ok") {
+//                    setTimeout(redireccionarPagina('ListarUsuarios.php?mensaje=deleteok'), 5000);
+//                } else {
+//                    showAlert("Ocurrio un error al actualizar la informaciòn", "error");
+//                }
+//            }
+//        });
+//    });
 
 
 

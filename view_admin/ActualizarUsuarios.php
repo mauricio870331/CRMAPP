@@ -1,6 +1,9 @@
 <?php
 session_start();
-include_once '../Model/BD.php';
+require '../Model/BD.php';
+
+$con = new BD();
+$rs = $con->findAll2("SELECT * FROM usuarios WHERE id = " . base64_decode($_GET['token']) . "");
 ?>
 <!DOCTYPE html>
 <html>
@@ -8,7 +11,7 @@ include_once '../Model/BD.php';
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <link href="dist/img/Favicon.png" rel="shortcut icon" />
-        <title>Crear Usuarios</title>
+        <title>Actualizar Usuarios</title>
         <!-- Tell the browser to be responsive to screen width -->
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
         <!-- Bootstrap 3.3.7 -->
@@ -89,7 +92,7 @@ include_once '../Model/BD.php';
                                                 $con->desconectar();
                                                 for ($index = 0; $index < count($list); $index++) {
                                                     ?>
-                                                    <option value="<?php echo $list[$index]['tipo_doc']; ?>"><?php echo $list[$index]['nombre']; ?></option>
+                                                    <option value="<?php echo $list[$index]['tipo_doc']; ?>" <?php echo ($list[$index]['tipo_doc'] == $rs[0]['tipo_doc']) ? "selected" : "" ?>><?php echo $list[$index]['nombre']; ?></option>
                                                     <?php
                                                 }
                                                 ?> 
@@ -99,19 +102,19 @@ include_once '../Model/BD.php';
 
                                         <div class="form-group">
                                             <label for="Documento">*Documento</label>
-                                            <input type="text" class="form-control" id="documento" placeholder="Ingrese Documento">
+                                            <input type="text" class="form-control" id="documento" value="<?php echo $rs[0]['documento']; ?>" placeholder="Ingrese Documento">
                                         </div>
                                         <div class="form-group">
                                             <label for="Nombres">*Nombres</label>
-                                            <input type="text" class="form-control" id="nombres" placeholder="Ingrese Nombres">
+                                            <input type="text" class="form-control" id="nombres" placeholder="Ingrese Nombres" value="<?php echo $rs[0]['nombres']; ?>" >
                                         </div>
                                         <div class="form-group">
                                             <label for="Apellidos">*Apellidos</label>
-                                            <input type="text" class="form-control" id="apellidos" placeholder="Ingrese Apellidos">
+                                            <input type="text" class="form-control" id="apellidos" placeholder="Ingrese Apellidos" value="<?php echo $rs[0]['apellidos']; ?>" >
                                         </div>
                                         <div class="form-group">
                                             <label for="telefonos">*Telefonos</label>
-                                            <input type="text" class="form-control" id="telefonos" placeholder="Ingrese Telefonos">
+                                            <input type="text" class="form-control" id="telefonos" placeholder="Ingrese Telefonos" value="<?php echo $rs[0]['telefono']; ?>" >
                                         </div>
 
 
@@ -126,7 +129,7 @@ include_once '../Model/BD.php';
                                                 $con->desconectar();
                                                 for ($index = 0; $index < count($list); $index++) {
                                                     ?>
-                                                    <option value="<?php echo $list[$index]['id_tipo_usuario']; ?>"><?php echo $list[$index]['descripcion']; ?></option>
+                                                    <option value="<?php echo $list[$index]['id_tipo_usuario']; ?>" <?php echo ($list[$index]['id_tipo_usuario'] == $rs[0]['id_tipo_usuario']) ? "selected" : "" ?> ><?php echo $list[$index]['descripcion']; ?></option>
                                                     <?php
                                                 }
                                                 ?> 
@@ -137,11 +140,11 @@ include_once '../Model/BD.php';
                                         <div class="form-group">
                                             <label>*Coach?</label>
                                             <input class="coach" type="radio" name="isCoach" value="No" checked="true">No &nbsp;
-                                            <input class="coach"  type="radio" name="isCoach" value="Si" >Si
+                                            <input class="coach"  type="radio" name="isCoach" value="Si" <?php echo ($rs[0]['coach']) ? "checked='true'" : "" ?> >Si
                                         </div> 
 
 
-                                        <div id="showCoach" class="form-group">
+                                        <div id="showCoach" class="form-group" <?php echo ($rs[0]['coach']) ? "" : "style='display: none;'" ?>>
                                             <label>*Coach</label>
                                             <select class="form-control" name="coach" id="coach">
                                                 <option value="">Seleccione</option>
@@ -164,17 +167,23 @@ include_once '../Model/BD.php';
 
                                         <div class="form-group">
                                             <label for="pass">*Contraseña</label>
-                                            <input type="text" class="form-control" id="pass" placeholder="Ingrese Contraseña">
+                                            <input type="password" class="form-control" id="pass" value="<?php echo $rs[0]['password']; ?>" placeholder="Ingrese Contraseña">
                                         </div>
                                         <div class="form-group">
                                             <label for="foto">Foto</label>
-                                            <input type="file" id="foto">                                               
+                                            <input type="file" id="foto">  
+                                            <?php
+                                            if ($rs[0]['foto'] != null) {
+                                                echo "Seleccione otro archivo para cambiar la foto actual";
+                                            }
+                                            ?>
                                         </div>                                            
                                     </div>
                                     <!-- /.box-body -->
 
                                     <div class="box-footer">
-                                        <button type="button" id="CrearUsuarios" class="btn btn-primary">Guardar</button>
+                                         <input type="hidden" id="id" value="<?php echo base64_decode($_GET['token']); ?>">
+                                        <button type="button" id="ActualizarUsuarios" class="btn btn-primary">Guardar</button>
                                     </div>
                                 </form>
                             </div>
