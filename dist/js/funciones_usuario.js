@@ -292,7 +292,6 @@ $(document).ready(function () {
 
 
     //Eliminar usuarios
-
     $("#deleteUser").click(function () {
         var data = new FormData();
         data.append("id", $(this).data("id"));
@@ -316,7 +315,80 @@ $(document).ready(function () {
 
 
 
-  
+    //AddRecursos
+    $("#addRecurso").click(function () {
+
+        var campos = ['descripcion', 'exampleInputFile'];
+        var countErrors = 0;
+        for (var item in campos) {
+            if ($("#" + campos[item]).val() === ""
+                    || $("#" + campos[item]).val() === "Seleccione") {
+                countErrors++;
+                $("#" + campos[item]).css("border", "1px solid red");
+            } else {
+                $("#" + campos[item]).css("border", "1px solid #d2d6de");
+            }
+        }
+        if (countErrors > 0) {
+            showAlert("Los campos marcados en rojo son obligatorios", "error");
+        } else {
+            var data = new FormData();
+            var inputFile = document.getElementById("exampleInputFile");
+            var file = inputFile.files[0];
+            if (file !== undefined) {
+                data.append("exampleInputFile", file);
+            }
+            data.append("descripcion", $("#descripcion").val());
+            $.ajax({
+                type: 'POST',
+                url: "../Model/Usuarios/AddRecursos.php",
+                data: data,
+                dataType: 'json',
+                contentType: false,
+                processData: false,
+                cache: false,
+                success: function (response) {
+                    if (response === "ok") {
+                        setTimeout(redireccionarPagina('ListarRecursos.php?mensaje=create'), 5000);
+                    } else {
+                        showAlert("Ocurrio un error al crear el recurso", "error");
+                    }
+                }
+            });
+        }
+    });
+
+
+//Modal delteDoc
+    $(".deleteRecurso").click(function () {
+        $("#RecursoId" + $(this).data("id")).trigger("click");
+        $("#deleteRecurso").attr("data-id", $(this).data("id"));
+    });
+
+
+    $("#deleteRecurso").click(function () {
+        var data = new FormData();
+        data.append("id", $(this).data("id"));     
+        $.ajax({
+            type: 'POST',
+            url: "../Model/Usuarios/DeleteRecurso.php",
+            data: data,
+            dataType: 'json',
+            contentType: false,
+            processData: false,
+            cache: false,
+            success: function (response) {
+                if (response === "ok") {
+                    setTimeout(redireccionarPagina('ListarRecursos.php?mensaje=delete'), 5000);
+                } else {
+                    showAlert("Ocurrio un error al eliminar la el afiliado", "error");
+                }
+            }
+        });
+    });
+    //Fin delteDoc
+
+
 
 
     //Crear usuarios
@@ -887,11 +959,11 @@ $(document).ready(function () {
     });
 
     $("#backInicio").click(function () {
-        redireccionarPagina('inicio.php');
+        redireccionarPagina('HomeAdmin.php');
     });
 
     $("#Inicio").click(function () {
-        redireccionarPagina('inicio.php');
+        redireccionarPagina('HomeAdmin.php');
     });
 
 

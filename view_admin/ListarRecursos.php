@@ -1,5 +1,7 @@
 <?php
 session_start();
+require '../Model/BD.php';
+$con = new BD();
 ?>
 <!DOCTYPE html>
 <html>
@@ -7,7 +9,7 @@ session_start();
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <link href="../dist/img/Favicon.png" rel="shortcut icon" />
-        <title>Listado de Usuarios</title>
+        <title>Listado de Recursos</title>
         <!-- Tell the browser to be responsive to screen width -->
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
         <!-- Bootstrap 3.3.7 -->
@@ -75,7 +77,7 @@ session_start();
                 <section class="content">
                     <div class="row">
                         <div class="col-xs-12">
-                            <button type="button" id="crearUsuarioSystem" class="btn btn-block btn-primary" style="width: 20%;margin-bottom: 1%;" >Crear Usuario</button>
+                            <button type="button" id="crearRecurso" class="btn btn-block btn-primary" data-toggle="modal" data-target="#modal-newRecurso" style="width: 12%;margin-bottom: 1%;" >Nuevo Recurso</button>
                         </div>
                     </div>
                     <div class="row">
@@ -87,22 +89,37 @@ session_start();
                                     <table id="example1" class="table table-bordered table-striped table-hover">
                                         <thead>
                                             <tr>
+                                                <th>#</th>
+                                                <th>Descripcion</th>
                                                 <th>Documento</th>
-                                                <th>Nombres</th>
-                                                <th>Apellidos</th>
-                                                <th>Tipo</th>
-                                                <!--<th>Foto</th>--> 
-                                                <th>Acciones</th>
+                                                <th>Fecha Registro</th>    
+                                                <th>Acciones</th>    
                                             </tr>
                                         </thead>
-                                        <tbody>
+                                        <tbody>  
                                             <?php
-                                            include '../Model/BD.php';
-                                            include '../Model/Usuarios/listUsers.php';
-                                            ?>                                           
-                                        </tbody>                                        
+                                            $con = new BD();
+                                            $SQL_SELECT = "SELECT * from recursos limit 500";
+                                            $rsDocs = $con->findAll2($SQL_SELECT);
+                                            $con->desconectar();
+                                            ?>
+                                            <?php for ($i = 0; $i < count($rsDocs); $i++) { ?>
+                                                <tr>
+                                                    <td><a class="textoc"><?php echo $rsDocs[$i]['id_recurso'] ?></a></td>
+                                                    <td><a class="textoc"><?php echo $rsDocs[$i]['descripcion'] ?></a></td>
+                                                    <td><a class="textoc" target="_blank" href="<?php echo $rsDocs[$i]['ruta'] . $rsDocs[$i]['nombre_archivo'] ?>" ><?php echo $rsDocs[$i]['nombre_archivo'] ?></a></td>
+                                                    <td><a class="textoc"><?php echo $rsDocs[$i]['fecha_registro'] ?></a></td>
+                                                    <td>
+                                                        <div class="col-md-3 col-sm-4" style="margin-right: -5%;">
+                                                            <i class="fa fa-fw fa-eraser deleteRecurso" data-id="<?php echo $rsDocs[$i]['id_recurso']; ?>" data-toggle="tooltip" title="Borrar"></i>
+                                                            <button type="button" style="display: none" class="btn btn-default" data-toggle="modal" data-target="#modal-deleteRec" id="RecursoId<?php echo $rsDocs[$i]['id_recurso'] ?>"/>
+                                                        </div>
+                                                    </td>                                                                
+                                                </tr>
+                                            <?php } ?>
+                                        </tbody>                                          
                                     </table>
-                                    <div class="modal fade" id="modal-default">
+                                    <div class="modal fade" id="modal-deleteRec">
                                         <div class="modal-dialog">
                                             <div class="modal-content" style="width: 60%;margin-left: 28%">
                                                 <div class="modal-header">
@@ -111,11 +128,11 @@ session_start();
                                                     <h4 class="modal-title">Confirmación</h4>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <p>Esta seguro de eliminar el usuario seleccionado?</p>
+                                                    <p>Esta seguro de eliminar el recurso seleccionado?</p>
                                                 </div>
                                                 <div class="modal-footer">
                                                     <button type="button"  class="btn btn-default pull-left" data-dismiss="modal">Cerrar</button>
-                                                    <button type="button" id="deleteUser" data-id=""  class="btn btn-primary">Eliminar</button>
+                                                    <button type="button" id="deleteRecurso" data-id=""  class="btn btn-primary">Eliminar</button>
                                                 </div>
                                             </div>
                                             <!-- /.modal-content -->
@@ -133,6 +150,39 @@ session_start();
                     <!-- /.row -->
                 </section>
                 <!-- /.content -->
+                <div class="modal fade" id="modal-newRecurso">
+                    <div class="modal-dialog">
+                        <div class="modal-content" style="width: 85%;margin-left: 12%">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title">Formulario Adjuntar Recursos de Ventas</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form role="form">
+                                    <div class="box-body">
+                                        <div class="form-group">
+                                            <label for="descripcion">Descripción</label>
+                                            <input type="text" class="form-control" id="descripcion" placeholder="Ingrese Descripción">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="exampleInputFile">Seleccionar Documento</label>
+                                            <input type="file" id="exampleInputFile">
+                                        </div>
+                                    </div>
+                                </form>
+                                <div class="modal-footer">
+                                    <button type="button"  class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                                    <button type="button" id="addRecurso" class="btn btn-primary">Guardar</button>
+                                </div>
+                            </div>
+                            <!-- /.modal-content -->
+                        </div>
+                        <!-- /.modal-dialog -->
+                    </div>
+                    <!-- /.modal -->
+                </div>
             </div>
             <?php include './FooterAdmin.php'; ?>
         </div>
@@ -161,27 +211,19 @@ session_start();
             var mensaje = getParameterByName('mensaje');
 
             $(function () {
-                $('#example1').DataTable()
-                $('#example2').DataTable({
-                    'paging': true,
-                    'lengthChange': false,
-                    'searching': false,
-                    'ordering': true,
-                    'info': true,
-                    'autoWidth': false
-                })
+                $('#example1').DataTable();
             })
 
-            if (mensaje == 'ok') {
-                showAlert("Usuario Registrado", "success");
+            if (mensaje == 'create') {
+                showAlert("Recurso creado corectamente", "success");
             }
 
-            if (mensaje == 'updateok') {
+            if (mensaje == 'update') {
                 showAlert("Usuario Actualizado con exito", "success");
             }
 
-            if (mensaje == 'deleteok') {
-                showAlert("Usuario Eliminado con exito", "success");
+            if (mensaje == 'delete') {
+                showAlert("Recurso Eliminado con exito", "success");
             }
 
             //style : success,info,warn,error

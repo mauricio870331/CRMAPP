@@ -32,20 +32,21 @@
                     </span>
                 </a>
                 <ul class="treeview-menu">
-                    <li><a href="ListarUsuarios.php"><i class="fa fa-circle-o"></i> Listar Usuarios</a></li>
-                    <li><a href="CrearUsuarios.php"><i class="fa fa-circle-o"></i> Crear Usuarios</a></li>                     
+                    <li><a href="ListarLeads.php"><i class="fa fa-circle-o"></i> Listar Leads</a></li>
+                    <li><a href="CrearLeads.php"><i class="fa fa-circle-o"></i> Crear Lead</a></li>                     
                 </ul>
             </li>
 
             <li class="treeview">
                 <a href="javascript:void(0);">
-                    <i class="fa fa-book"></i> <span>Ventas</span>
+                    <i class="fa fa-automobile"></i> <span>Afiliados</span>
                     <span class="pull-right-container">
                         <i class="fa fa-angle-left pull-right"></i>
                     </span>
                 </a>
-                <ul class="treeview-menu">                   
-                    <li><a href="ListarRecursos.php"><i class="fa fa-circle-o"></i> Listado de Recursos</a></li>
+                <ul class="treeview-menu">
+                    <li><a href="ListarAfiliados.php"><i class="fa fa-circle-o"></i> Listar</a></li>
+                    <li><a href="CrearAfiliados.php"><i class="fa fa-circle-o"></i> Crear</a></li>
                 </ul>
             </li>  
 

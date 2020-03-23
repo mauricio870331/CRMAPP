@@ -7,7 +7,7 @@ session_start();
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <link href="../dist/img/Favicon.png" rel="shortcut icon" />
-        <title>Listado de Usuarios</title>
+        <title>Listado de Leads</title>
         <!-- Tell the browser to be responsive to screen width -->
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
         <!-- Bootstrap 3.3.7 -->
@@ -52,22 +52,24 @@ session_start();
     <body class="hold-transition skin-blue sidebar-mini">
         <div class="wrapper">
 
+            <!-- Left side column. contains the sidebar -->
+            <!-- Header -->
+            <?php include_once '../view_asesor/HeaderAsesor.php'; ?>
+            <!-- =============================================== -->
+
             <!-- =============================================== -->
 
             <!-- Left side column. contains the sidebar -->
-            <!-- Header -->
-            <?php include_once './HeaderAdmin.php'; ?>
-            <!-- =============================================== -->
-            <!-- Left side column. contains the logo and sidebar -->
             <!-- Menu -->
-            <?php include_once './MenuAdmin.php'; ?>
+            <?php include_once '../view_asesor/MenuAsesor.php'; ?>
+            <!-- =============================================== -->
 
             <!-- Content Wrapper. Contains page content -->
             <div class="content-wrapper">
                 <!-- Content Header (Page header) -->
                 <section class="content-header">
                     <h1>
-                        Listado de Usuarios || <input type="button" id="backInicio" class="btn btn-success"  value="Regresar">
+                        Listado de Leads || <input type="button" id="backInicio" class="btn btn-success"  value="Regresar">
                     </h1>                    
                 </section>
 
@@ -75,7 +77,7 @@ session_start();
                 <section class="content">
                     <div class="row">
                         <div class="col-xs-12">
-                            <button type="button" id="crearUsuarioSystem" class="btn btn-block btn-primary" style="width: 20%;margin-bottom: 1%;" >Crear Usuario</button>
+                            <button type="button" id="crearNuevoLead" class="btn btn-block btn-primary" style="width: 20%;margin-bottom: 1%;" >Crear Usuario</button>
                         </div>
                     </div>
                     <div class="row">
@@ -87,10 +89,13 @@ session_start();
                                     <table id="example1" class="table table-bordered table-striped table-hover">
                                         <thead>
                                             <tr>
-                                                <th>Documento</th>
+                                                <th>SS</th>
+                                                <th>Estado</th>   
+                                                <th>Situación</th>  
                                                 <th>Nombres</th>
                                                 <th>Apellidos</th>
-                                                <th>Tipo</th>
+                                                <th>Dirección</th>
+                                                <th>Telefonos</th>
                                                 <!--<th>Foto</th>--> 
                                                 <th>Acciones</th>
                                             </tr>
@@ -98,7 +103,7 @@ session_start();
                                         <tbody>
                                             <?php
                                             include '../Model/BD.php';
-                                            include '../Model/Usuarios/listUsers.php';
+                                            include '../Model/Leads/ListLeads.php';
                                             ?>                                           
                                         </tbody>                                        
                                     </table>
@@ -111,11 +116,11 @@ session_start();
                                                     <h4 class="modal-title">Confirmación</h4>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <p>Esta seguro de eliminar el usuario seleccionado?</p>
+                                                    <p>Esta seguro de modificar el estado del lead seleccionado?</p>
                                                 </div>
                                                 <div class="modal-footer">
                                                     <button type="button"  class="btn btn-default pull-left" data-dismiss="modal">Cerrar</button>
-                                                    <button type="button" id="deleteUser" data-id=""  class="btn btn-primary">Eliminar</button>
+                                                    <button type="button" id="deleteLead" data-id="" data-opc=""  class="btn btn-primary">Modificar</button>
                                                 </div>
                                             </div>
                                             <!-- /.modal-content -->
@@ -134,7 +139,8 @@ session_start();
                 </section>
                 <!-- /.content -->
             </div>
-            <?php include './FooterAdmin.php'; ?>
+            <?php include './FooterASesor.php'; ?>
+
         </div>
         <!-- ./wrapper -->
 
@@ -155,7 +161,7 @@ session_start();
         <script src="../dist/js/demo.js"></script>
         <!-- otras -->
         <script src="../dist/js/notify.js" type="text/javascript"></script>
-        <script src="../dist/js/funciones_usuario.js" type="text/javascript"></script>
+        <script src="../dist/js/funciones_leads.js" type="text/javascript"></script>
         <!-- page script -->
         <script>
             var mensaje = getParameterByName('mensaje');
@@ -173,15 +179,15 @@ session_start();
             })
 
             if (mensaje == 'ok') {
-                showAlert("Usuario Registrado", "success");
+                showAlert("Lead Registrado", "success");
             }
 
-            if (mensaje == 'updateok') {
-                showAlert("Usuario Actualizado con exito", "success");
+            if (mensaje == 'updateOk') {
+                showAlert("Lead Actualizado con exito", "success");
             }
 
             if (mensaje == 'deleteok') {
-                showAlert("Usuario Eliminado con exito", "success");
+                showAlert("Estado de Lead Actualziado", "success");
             }
 
             //style : success,info,warn,error

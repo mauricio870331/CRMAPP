@@ -40,7 +40,7 @@ $rs = $con->findAll2("SELECT * FROM usuarios WHERE id = " . base64_decode($_GET[
         <!-- Site wrapper -->
         <div class="wrapper">
 
-            <!-- =============================================== -->
+               <!-- =============================================== -->
 
             <!-- Left side column. contains the sidebar -->
             <!-- Header -->
@@ -215,7 +215,7 @@ $rs = $con->findAll2("SELECT * FROM usuarios WHERE id = " . base64_decode($_GET[
         <script src="../dist/js/demo.js"></script>
         <!-- funciones propias -->
         <script src="../dist/js/notify.js" type="text/javascript"></script>
-        <script src="../dist/js/funciones.js"></script>
+        <script src="../dist/js/funciones_usuario.js"></script>
         <script>
             $(document).ready(function () {
                 $('.sidebar-menu').tree()

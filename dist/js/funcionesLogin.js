@@ -15,8 +15,10 @@ jQuery(function () {
             url: "Model/login.php",
             data: {usuario: jQuery("#usuario").val(), pass: jQuery("#pass").val()},
             success: function (response) {
-                if (response === 'ok') {
-                    setTimeout(redireccionarPagina('inicio.php'), 3000);
+                if (response === 'ADMINISTRADOR') {
+                    setTimeout(redireccionarPagina('view_admin/HomeAdmin.php'), 3000);
+                } else if (response !== 'ADMINISTRADOR' && response === 'error') {
+                    setTimeout(redireccionarPagina('view_asesor/HomeAsesor.php'), 3000);
                 } else {
                     showAlert("Usuario o Contraseña incorrecto", "error");
                     jQuery("#usuario").val("");

@@ -7,8 +7,8 @@ include_once '../Model/BD.php';
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <link href="dist/img/Favicon.png" rel="shortcut icon" />
-        <title>Crear Usuarios</title>
+        <link href="../dist/img/Favicon.png" rel="shortcut icon" />
+        <title>Crear Leads</title>
         <!-- Tell the browser to be responsive to screen width -->
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
         <!-- Bootstrap 3.3.7 -->
@@ -17,11 +17,15 @@ include_once '../Model/BD.php';
         <link rel="stylesheet" href="../bower_components/font-awesome/css/font-awesome.min.css">
         <!-- Ionicons -->
         <link rel="stylesheet" href="../bower_components/Ionicons/css/ionicons.min.css">
+        <!-- Bootstrap time Picker -->
+        <link rel="stylesheet" href="../plugins/timepicker/bootstrap-timepicker.min.css">
         <!-- Theme style -->
         <link rel="stylesheet" href="../dist/css/AdminLTE.min.css">
         <!-- AdminLTE Skins. Choose a skin from the css/skins
              folder instead of downloading all of them to reduce the load. -->
         <link rel="stylesheet" href="../dist/css/skins/_all-skins.min.css">
+        <!-- bootstrap datepicker -->
+        <link rel="stylesheet" href="../bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
         <link href="../dist/css/mycss.css" rel="stylesheet" type="text/css"/>
         <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -41,14 +45,14 @@ include_once '../Model/BD.php';
 
             <!-- Left side column. contains the sidebar -->
             <!-- Header -->
-            <?php include_once '../view_admin/HeaderAdmin.php'; ?>
+            <?php include_once '../view_asesor/HeaderAsesor.php'; ?>
             <!-- =============================================== -->
 
             <!-- =============================================== -->
 
             <!-- Left side column. contains the sidebar -->
             <!-- Menu -->
-            <?php include_once '../view_admin/MenuAdmin.php'; ?>
+            <?php include_once '../view_asesor/MenuAsesor.php'; ?>
             <!-- =============================================== -->
 
             <!-- Content Wrapper. Contains page content -->
@@ -56,7 +60,7 @@ include_once '../Model/BD.php';
                 <!-- Content Header (Page header) -->
                 <section class="content-header">
                     <h1>
-                        Crear Usuarios || <input type="button" id="backCrearUsuarios" class="btn btn-success"  value="Cancelar">                       
+                        Crear Lead || <input type="button" id="backCrearLead" class="btn btn-success"  value="Cancelar">                       
                     </h1>                   
                 </section>
 
@@ -79,116 +83,114 @@ include_once '../Model/BD.php';
                                     <div class="box-body">
 
                                         <div class="form-group">
-                                            <label>*Tipo Documento</label>
-                                            <select class="form-control" name="tipo_doc" id="tipo_doc">
-                                                <option value="">Seleccione</option>
-                                                <?php
-                                                $con = new BD();
-                                                $SQL_SELECT = "SELECT * FROM tipo_documento";
-                                                $list = $con->query($SQL_SELECT);
-                                                $con->desconectar();
-                                                for ($index = 0; $index < count($list); $index++) {
-                                                    ?>
-                                                    <option value="<?php echo $list[$index]['tipo_doc']; ?>"><?php echo $list[$index]['nombre']; ?></option>
-                                                    <?php
-                                                }
-                                                ?> 
-                                            </select>
+                                            <label for="ss">*Seguro Social</label>
+                                            <input type="text" class="form-control" id="ss" placeholder="Ingrese Seguro Social">
                                         </div>
 
-
                                         <div class="form-group">
-                                            <label for="Documento">*Documento</label>
-                                            <input type="text" class="form-control" id="documento" placeholder="Ingrese Documento">
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="Nombres">*Nombres</label>
+                                            <label for="nombres">*Nombres</label>
                                             <input type="text" class="form-control" id="nombres" placeholder="Ingrese Nombres">
                                         </div>
+
                                         <div class="form-group">
-                                            <label for="Apellidos">*Apellidos</label>
-                                            <input type="text" class="form-control" id="apellidos" placeholder="Ingrese Apellidos">
+                                            <label for="apellidos">*Apellidos</label>
+                                            <input type="text" class="form-control" id="apellidos" placeholder="Ingrese Nombres">
                                         </div>
+
+                                        <div class="form-group">
+                                            <label for="direccion">*Direccion</label>
+                                            <input type="text" class="form-control" id="direccion" placeholder="Ingrese Direccion">
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="email">*Email</label>
+                                            <input type="text" class="form-control" id="email" placeholder="Ingrese Email">
+                                        </div>
+
                                         <div class="form-group">
                                             <label for="telefonos">*Telefonos</label>
                                             <input type="text" class="form-control" id="telefonos" placeholder="Ingrese Telefonos">
                                         </div>
 
 
+
                                         <div class="form-group">
-                                            <label>*Tipo Usuario</label>
-                                            <select class="form-control" name="tipo_user" id="tipo_user">
+                                            <label>Fecha de Nacimiento</label>
+                                            <div class="input-group date">
+                                                <div class="input-group-addon">
+                                                    <i class="fa fa-calendar"></i>
+                                                </div>
+                                                <input type="text" class="form-control pull-right" id="dob" />
+                                            </div>
+                                            <!-- /.input group -->
+                                        </div>
+
+
+                                        <div class="form-group">
+                                            <label>*Fecha de Cita</label>
+                                            <div class="input-group date">
+                                                <div class="input-group-addon">
+                                                    <i class="fa fa-calendar"></i>
+                                                </div>
+                                                <input type="text" class="form-control pull-right" id="cita" />
+                                            </div>                                           
+                                            <!-- /.input group -->
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label>*Hora Cita</label>
+
+                                            <div class="input-group">
+                                                <input type="text" class="form-control timepicker" id="hora_cita">
+
+                                                <div class="input-group-addon">
+                                                    <i class="fa fa-clock-o"></i>
+                                                </div>
+                                            </div>
+                                            <!-- /.input group -->
+                                        </div>
+
+
+                                        <div class="form-group">
+                                            <label>*Ciudad</label>
+                                            <select class="form-control" name="city" id="id_ciudad">
                                                 <option value="">Seleccione</option>
                                                 <?php
                                                 $con = new BD();
-                                                $SQL_SELECT = "SELECT * FROM tipo_usuario";
+                                                $SQL_SELECT = "SELECT * FROM ciudad";
                                                 $list = $con->query($SQL_SELECT);
                                                 $con->desconectar();
                                                 for ($index = 0; $index < count($list); $index++) {
                                                     ?>
-                                                    <option value="<?php echo $list[$index]['id_tipo_usuario']; ?>"><?php echo $list[$index]['descripcion']; ?></option>
+                                                    <option value="<?php echo $list[$index]['id']; ?>"><?php echo $list[$index]['ciudad']; ?></option>
                                                     <?php
                                                 }
                                                 ?> 
                                             </select>
                                         </div>
 
-
                                         <div class="form-group">
-                                            <label>*Coach?</label>
-                                            <input class="coach" type="radio" name="isCoach" value="No" checked="true">No &nbsp;
-                                            <input class="coach"  type="radio" name="isCoach" value="Si" >Si
-                                        </div> 
-
-
-                                        <div id="showCoach" class="form-group">
-                                            <label>*Coach</label>
-                                            <select class="form-control" name="coach" id="coach">
+                                            <label>*Estado</label>
+                                            <select class="form-control" name="estado" id="id_estado">
                                                 <option value="">Seleccione</option>
-                                                <?php
-                                                $con = new BD();
-                                                $SQL_SELECT = "SELECT id, nombres, apellidos FROM usuarios u "
-                                                        . "inner join tipo_usuario t on u.id_tipo_usuario = t.id_tipo_usuario "
-                                                        . "where t.descripcion = 'COACH'";
-                                                $list = $con->query($SQL_SELECT);
-                                                $con->desconectar();
-                                                for ($index = 0; $index < count($list); $index++) {
-                                                    ?>
-                                                    <option value="<?php echo $list[$index]['id']; ?>"><?php echo $list[$index]['nombres'] . " " . $list[$index]['apellidos']; ?></option>
-                                                    <?php
-                                                }
-                                                ?> 
                                             </select>
                                         </div>
-
-
-                                        <div class="form-group">
-                                            <label for="pass">*Contraseña</label>
-                                            <input type="text" class="form-control" id="pass" placeholder="Ingrese Contraseña">
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="foto">Foto</label>
-                                            <input type="file" id="foto">                                               
-                                        </div>                                            
                                     </div>
                                     <!-- /.box-body -->
-
                                     <div class="box-footer">
-                                        <button type="button" id="CrearUsuarios" class="btn btn-primary">Guardar</button>
+                                        <button type="button" id="CrearLead" class="btn btn-primary">Guardar</button>
                                     </div>
                                 </form>
                             </div>
                         </div>
                     </div>
                     <!-- /.box-body -->
-
                     <!-- /.box -->
-
                 </section>
                 <!-- /.content -->
             </div>
             <!-- /.content-wrapper -->
-            <?php include '../view_admin/FooterAdmin.php'; ?>
+            <?php include '../view_asesor/FooterASesor.php'; ?>
         </div>
         <!-- ./wrapper -->
 
@@ -200,16 +202,40 @@ include_once '../Model/BD.php';
         <script src="../bower_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>
         <!-- FastClick -->
         <script src="../bower_components/fastclick/lib/fastclick.js"></script>
+        <!-- bootstrap datepicker -->
+        <script src="../bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+        <!-- bootstrap time picker -->
+        <script src="../plugins/timepicker/bootstrap-timepicker.min.js"></script>
         <!-- AdminLTE App -->
         <script src="../dist/js/adminlte.min.js"></script>
         <!-- AdminLTE for demo purposes -->
         <script src="../dist/js/demo.js"></script>
         <!-- funciones propias -->
         <script src="../dist/js/notify.js" type="text/javascript"></script>
-        <script src="../dist/js/funciones_usuario.js"></script>
+        <script src="../dist/js/funciones_leads.js"></script>
         <script>
             $(document).ready(function () {
                 $('.sidebar-menu').tree()
+            })
+
+            $(function () {
+                //Date picker
+                $('#dob').datepicker({
+                    autoclose: true,
+                    format: 'yyyy-mm-dd'
+                })
+
+                $('#cita').datepicker({
+                    autoclose: true,
+                    format: 'yyyy-mm-dd'
+                })
+
+                //Timepicker
+                $('.timepicker').timepicker({
+                    showInputs: false
+                })
+
+
             })
         </script>
     </body>

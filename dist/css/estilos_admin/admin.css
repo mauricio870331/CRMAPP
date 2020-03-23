@@ -1,0 +1,17 @@
+.left{
+    width: 48%;
+    float: left;
+}
+
+.right{
+    width: 48%;
+    float: right;
+}
+
+.up{
+    font-size: 25px;
+}
+
+.upPays{
+    font-size: 20px;
+}
