@@ -3,38 +3,54 @@ session_start();
 
 require '../Model/BD.php';
 $con = new BD();
+$hoy = date("Y-m-d");
 $SQL_SELECT_LEAD = "SELECT count(*) total_leads FROM personas u "
-        . "inner join situacion_personas sp on sp.id_persona = u.id 
-                       and sp.fecha_registro = (select MAX(sf.fecha_registro) from situacion_personas sf where sf.id_persona = u.id) "
-        . "inner join situacion si on si.id_situacion = sp.id_situacion AND si.estado = 'LEAD'";
+        . "inner join situacion_personas sp on sp.id_persona = u.id "
+        . "inner join situacion si on si.id_situacion = sp.id_situacion AND si.estado = 'LEAD' ";
+        //. "WHERE sp.fecha_registro BETWEEN '" . $hoy . " 00:00:00' AND '" . $hoy . " 23:59:59'";
 $rsLead = $con->findAll2($SQL_SELECT_LEAD);
 
-$hoy = date("Y-m-d");
+
 
 $SQL_SELECT_CLIENTE = "SELECT count(*) total_clientes FROM personas u "
-        . "inner join situacion_personas sp on sp.id_persona = u.id 
-                       and sp.fecha_registro = (select MAX(sf.fecha_registro) from situacion_personas sf where sf.id_persona = u.id) "
+        . "inner join situacion_personas sp on sp.id_persona = u.id "
         . "inner join situacion si on si.id_situacion = sp.id_situacion AND si.estado = 'CLIENTE' "
         . "WHERE sp.fecha_registro BETWEEN '" . $hoy . " 00:00:00' AND '" . $hoy . " 23:59:59'";
 $rsCliente = $con->findAll2($SQL_SELECT_CLIENTE);
 
-$SQL_SUM_TRANFER = "select  COALESCE(sum(pp.valor_pagado), 0) total from pagos_producto pp "
+$SQL_SUM_TRANFER = "select  COALESCE(sum(pp.valor_cuota), 0) total from pagos_producto pp "
         . "inner join estados_de_pago ep on ep.id_estado_pago = pp.id_estado_pago and ep.codigo = 'R0'";
 $rsTanfer = $con->findAll2($SQL_SUM_TRANFER);
 
-$SQL_SUM_PROCCESS = "select  COALESCE(sum(pp.valor_pagado), 0) total from pagos_producto pp "
+$SQL_SUM_PROCCESS = "select  COALESCE(sum(pp.valor_cuota), 0) total from pagos_producto pp "
         . "inner join estados_de_pago ep on ep.id_estado_pago = pp.id_estado_pago and ep.codigo = 'EN PROCESO'";
 $rsProccess = $con->findAll2($SQL_SUM_PROCCESS);
 
-$SQL_SUM_APROBE = "select  COALESCE(sum(pp.valor_pagado), 0) total from pagos_producto pp "
-        . "inner join estados_de_pago ep on ep.id_estado_pago = pp.id_estado_pago and ep.codigo = 'EN PROCESO'";
+$SQL_SUM_APROBE = "select  COALESCE(sum(pp.valor_cuota), 0) total from pagos_producto pp "
+        . "inner join estados_de_pago ep on ep.id_estado_pago = pp.id_estado_pago and ep.codigo = 'APROBADO'";
 $rsAprobe = $con->findAll2($SQL_SUM_APROBE);
 
 
-$SQL_SUM_DOWN = "select  COALESCE(sum(pp.valor_pagado), 0) total from pagos_producto pp "
+$SQL_SUM_DOWN = "select  COALESCE(sum(pp.valor_cuota), 0) total from pagos_producto pp "
         . "inner join estados_de_pago ep on ep.id_estado_pago = pp.id_estado_pago "
         . "and ep.codigo in ('R1','R2','R3','R4','R7','R8','R9','R10','R15','R16','R20')";
 $rsDown = $con->findAll2($SQL_SUM_DOWN);
+
+$SQL_COUNT_NOTP = "select count(id_notificacion) total from notificaciones where estado = 'PENDIENTE'";
+$rscCountNotify = $con->findAll2($SQL_COUNT_NOTP);
+
+$SQL_COUNT_NOTE = "select count(id_notificacion) total from notificaciones where estado = 'EJECUTADA'";
+$rscCountNotifyE = $con->findAll2($SQL_COUNT_NOTE);
+
+
+$SQL_SUM_TOT_VENT = "select COALESCE(sum(valor_cuota), 0) total from pagos_producto "
+        . "where fecha_pago_realizado between '" . $hoy . " 00:00:00' and '" . $hoy . " 23:59:59'";
+$rsTotVent = $con->findAll2($SQL_SUM_TOT_VENT);
+
+
+
+$SQL_SUM_TOT_REC = "select count(id_recurso) total from recursos ";
+$rsTotRecursos = $con->findAll2($SQL_SUM_TOT_REC);
 
 //print_r($rsDown);die;
 
@@ -62,6 +78,7 @@ $con->desconectar();
         <link rel="stylesheet" href="../dist/css/skins/_all-skins.min.css">
         <link rel="stylesheet" href="../bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
         <!-- Google Font -->
+        <link href="../dist/css/mycss.css" rel="stylesheet" type="text/css"/>
         <link rel="stylesheet" href="../dist/css/AllFonts.css">
         <link href="../dist/css/estilos_admin/admin.css" rel="stylesheet"/>
 
@@ -105,7 +122,7 @@ $con->desconectar();
                                     <div class="small-box bg-aqua">
                                         <div class="inner">
                                             <h4>Leads</h4>
-                                            <h3>Total: <?php echo $rsLead[0]['total_leads']; ?></h3>
+                                            <h3 id="total_leads">Total: <?php echo $rsLead[0]['total_leads']; ?></h3>
                                         </div>
                                         <div class="icon">
                                             <i class="fa fa-users"></i>
@@ -118,12 +135,12 @@ $con->desconectar();
                                     <div class="small-box bg-yellow">
                                         <div class="inner">
                                             <h4>Notificaciones Pendientes</h4>
-                                            <h3>Total:</h3>
+                                            <h3 id="notificaiones_pend">Total: <?php echo $rscCountNotify[0]['total'] ?></h3>
                                         </div>
                                         <div class="icon">
                                             <i class="fa fa-bell"></i>
                                         </div>
-                                        <a href="ListarAfiliados.php" class="small-box-footer">Empezar <i class="fa fa-arrow-circle-right"></i></a>
+                                        <a href="ListarNotificaciones.php?token=<?php echo base64_encode("PENDIENTE"); ?>" class="small-box-footer">Empezar <i class="fa fa-arrow-circle-right"></i></a>
                                     </div>
                                 </div>
 
@@ -132,12 +149,12 @@ $con->desconectar();
                                     <div class="small-box bg-green">
                                         <div class="inner">
                                             <h4>Notificaciones Ejecutadas</h4>
-                                            <h3>Total:</h3>
+                                            <h3 id="notificaciones_ejec">Total: <?php echo $rscCountNotifyE[0]['total'] ?></h3>
                                         </div>
                                         <div class="icon">
                                             <i class="fa fa-bell-slash"></i>
                                         </div>
-                                        <a href="ListadoDePagos.php" class="small-box-footer">Empezar <i class="fa fa-arrow-circle-right"></i></a>
+                                        <a href="ListarNotificaciones.php?token=<?php echo base64_encode("EJECUTADA"); ?>" class="small-box-footer">Empezar <i class="fa fa-arrow-circle-right"></i></a>
                                     </div>
                                 </div>
 
@@ -146,7 +163,7 @@ $con->desconectar();
                                     <div class="small-box bg-red">
                                         <div class="inner">
                                             <h4>Recursos Ventas</h4>
-                                            <h3>Total:</h3>
+                                            <h3>Total: <?php echo $rsTotRecursos[0]['total'] ?></h3>
                                         </div>
                                         <div class="icon">
                                             <i class="fa fa-graduation-cap"></i>
@@ -167,7 +184,7 @@ $con->desconectar();
 
                                 <div class="info-box-content">
                                     <span class="info-box-text">Ventas del Dia</span>
-                                    <span class="info-box-number up"><?php echo $rsCliente[0]['total_clientes']; ?></span>
+                                    <span class="info-box-number up" id="total_clientes"><?php echo $rsCliente[0]['total_clientes']; ?></span>
                                 </div>
                                 <!-- /.info-box-content -->
                             </div>
@@ -180,7 +197,7 @@ $con->desconectar();
 
                                 <div class="info-box-content">
                                     <span class="info-box-text">Total Vendido</span>
-                                    <span class="info-box-number up">410</span>
+                                    <span class="info-box-number up" id="total_venta">$<?php echo number_format($rsTotVent[0]['total'], 0, ",", "."); ?></span>
                                 </div>
                                 <!-- /.info-box-content -->
                             </div>
@@ -197,7 +214,7 @@ $con->desconectar();
                                 <!-- /.box-header -->
                                 <div class="box-body">
                                     <div class="row">
-                                        <div class="col-md-8">
+                                        <div class="col-md-12">
                                             <div class="box box-primary">
                                                 <div class="box-header with-border">
                                                     <h3 class="box-title">Filtrar</h3>
@@ -213,7 +230,7 @@ $con->desconectar();
                                                                     <div class="input-group-addon">
                                                                         <i class="fa fa-calendar"></i>
                                                                     </div>
-                                                                    <input type="text" class="form-control pull-right" id="fini" />
+                                                                    <input type="text" class="form-control pull-right" id="fini" value="<?php echo $hoy; ?>"/>
                                                                 </div>
                                                                 <!-- /.input group -->
                                                             </div>
@@ -223,7 +240,7 @@ $con->desconectar();
                                                                     <div class="input-group-addon">
                                                                         <i class="fa fa-calendar"></i>
                                                                     </div>
-                                                                    <input type="text" class="form-control pull-right" id="ffin" />
+                                                                    <input type="text" class="form-control pull-right" id="ffin" value="<?php echo $hoy; ?>"/>
                                                                 </div>
                                                                 <!-- /.input group -->
                                                             </div>
@@ -252,7 +269,7 @@ $con->desconectar();
 
                                                             <div class="form-group right">
                                                                 <label>*Asesor</label>
-                                                                <select class="form-control" name="coach" id="coach">
+                                                                <select class="form-control" name="asesor" id="asesor">
                                                                     <option value="">Seleccione</option>
                                                                     <?php
                                                                     $con = new BD();
@@ -273,55 +290,11 @@ $con->desconectar();
                                                     </div>
                                                     <!-- /.box-body -->
                                                     <div class="box-footer">
-                                                        <button type="button" class="btn btn-primary">Buscar</button>
+                                                        <button id="filterInHome" type="button" class="btn btn-primary">Buscar</button>
                                                     </div>
                                                 </form>
                                             </div>
-                                        </div>
-                                        <!-- /.col -->
-                                        <div class="col-md-4">
-                                            <p class="text-center">
-                                                <strong>Informacion General</strong>
-                                            </p>
-
-                                            <div class="progress-group">
-                                                <span class="progress-text">Total Afiliados Activos</span>
-                                                <span class="progress-number"><b>1</b></span>
-
-                                                <div class="progress sm">
-                                                    <div class="progress-bar progress-bar-aqua" style="width: 2%"></div>
-                                                </div>
-                                            </div>
-                                            <!-- /.progress-group -->
-                                            <div class="progress-group">
-                                                <span class="progress-text">Total Afiliados Inactivos</span>
-                                                <span class="progress-number"><b>2</b></span>
-
-                                                <div class="progress sm">
-                                                    <div class="progress-bar progress-bar-red" style="width:2%"></div>
-                                                </div>
-                                            </div>
-                                            <!-- /.progress-group -->
-                                            <div class="progress-group">
-                                                <span class="progress-text">Total Vehiculos</span>
-                                                <span class="progress-number"><b>3</b></span>
-
-                                                <div class="progress sm">
-                                                    <div class="progress-bar progress-bar-green" style="width:3%"></div>
-                                                </div>
-                                            </div>
-                                            <!-- /.progress-group -->
-                                            <div class="progress-group">
-                                                <span class="progress-text">Total Ganancia</span>
-                                                <span class="progress-number"><b>5000</b></span>
-
-                                                <div class="progress sm">
-                                                    <div class="progress-bar progress-bar-yellow" style="width: <?php echo 3000 * 0.000001; ?>%"></div>
-                                                </div>
-                                            </div>
-                                            <!-- /.progress-group -->
-                                        </div>
-                                        <!-- /.col -->
+                                        </div>                                  
                                     </div>
                                     <!-- /.row -->
                                 </div>
@@ -381,7 +354,7 @@ $con->desconectar();
 
                                 <div class="info-box-content">
                                     <span class="info-box-text">TRANFER</span>
-                                    <span class="info-box-number upPays">$<?php echo number_format($rsTanfer[0]['total'], 0, ",", "."); ?></span>
+                                    <span class="info-box-number upPays" id="total_tranfer">$<?php echo number_format($rsTanfer[0]['total'], 0, ",", "."); ?></span>
 
                                     <div class="progress">
                                         <div class="progress-bar" style="width: 0%"></div>
@@ -401,7 +374,7 @@ $con->desconectar();
 
                                 <div class="info-box-content">
                                     <span class="info-box-text">PROCESO</span>
-                                    <span class="info-box-number upPays">$<?php echo number_format($rsProccess[0]['total'], 0, ",", "."); ?></span>
+                                    <span class="info-box-number upPays" id="total_proccess">$<?php echo number_format($rsProccess[0]['total'], 0, ",", "."); ?></span>
 
                                     <div class="progress">
                                         <div class="progress-bar" style="width: 0%"></div>
@@ -421,7 +394,7 @@ $con->desconectar();
 
                                 <div class="info-box-content">
                                     <span class="info-box-text">RECAUDO</span>
-                                    <span class="info-box-number upPays">$<?php echo number_format($rsAprobe[0]['total'], 0, ",", "."); ?></span>
+                                    <span class="info-box-number upPays" id="total_aprobados">$<?php echo number_format($rsAprobe[0]['total'], 0, ",", "."); ?></span>
                                     <div class="progress">
                                         <div class="progress-bar" style="width: 70%"></div>
                                     </div>
@@ -440,7 +413,7 @@ $con->desconectar();
 
                                 <div class="info-box-content">
                                     <span class="info-box-text">CAIDA</span>
-                                    <span class="info-box-number upPays">$<?php echo number_format($rsDown[0]['total'], 0, ",", "."); ?></span>
+                                    <span class="info-box-number upPays" id="total_caida">$<?php echo number_format($rsDown[0]['total'], 0, ",", "."); ?></span>
 
                                     <div class="progress">
                                         <div class="progress-bar" style="width: 70%"></div>
@@ -449,13 +422,13 @@ $con->desconectar();
                                         <!--70% Increase in 30 Days->
                                     </span>
                                 </div>
-                                <!-- /.info-box-content -->
+                                        <!-- /.info-box-content -->
+                                </div>
+                                <!-- /.info-box -->
                             </div>
-                            <!-- /.info-box -->
+                            <!-- /.col -->
                         </div>
-                        <!-- /.col -->
-                    </div>
-                    <!-- /.row -->
+                        <!-- /.row -->
 
 
                 </section>
@@ -466,9 +439,15 @@ $con->desconectar();
         </div>
         <!-- ./wrapper -->
         <!-- jQuery 3 -->
+
+
+
+
         <script src="../bower_components/jquery/dist/jquery.min.js"></script>
         <!-- Bootstrap 3.3.7 -->
         <script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+        <!-- SlimScroll -->
+        <script src="../bower_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>
         <!-- FastClick -->
         <script src="../bower_components/fastclick/lib/fastclick.js"></script>
         <!-- bootstrap datepicker -->
@@ -477,17 +456,14 @@ $con->desconectar();
         <script src="../dist/js/adminlte.min.js"></script>
         <!-- Sparkline -->
         <script src="../bower_components/jquery-sparkline/dist/jquery.sparkline.min.js"></script>
-        <!-- jvectormap  -->
-        <!--<script src="plugins/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>-->
-        <!--<script src="plugins/jvectormap/jquery-jvectormap-world-mill-en.js"></script>-->
-        <!-- SlimScroll -->
-        <!--<script src="bower_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>-->
-        <!-- ChartJS -->
-        <script src="../bower_components/chart.js/Chart.js"></script>
+        <!-- AdminLTE App -->
+        <script src="../dist/js/adminlte.min.js"></script>      
         <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
         <!--<script src="dist/js/pages/dashboard2.js"></script>-->
         <!-- AdminLTE for demo purposes -->
         <script src="../dist/js/demo.js"></script>
+        <script src="../dist/js/notify.js" type="text/javascript"></script>
+        <script src="../dist/js/funciones_usuario.js"></script>
 
         <script>
 

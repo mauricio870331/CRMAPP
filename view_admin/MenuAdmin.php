@@ -15,7 +15,7 @@
         <ul class="sidebar-menu" data-widget="tree">
             <li class="header">Navegaciòn Principal</li>
 
-            <li class="treeview" id="Inicio">
+            <li class="treeview" id="Inicio" data-view="admin">
                 <a href="javascript:void(0);" >
                     <i class="fa fa-home"></i> <span>Inicio</span>  
                     <span class="pull-right-container">
@@ -26,20 +26,21 @@
 
             <li class="treeview">
                 <a href="javascript:void(0);">
-                    <i class="fa fa-users"></i> <span>Administración</span>
+                    <i class="fa fa-users"></i> <span>Usuarios</span>
                     <span class="pull-right-container">
                         <i class="fa fa-angle-left pull-right"></i>
                     </span>
                 </a>
                 <ul class="treeview-menu">
-                    <li><a href="ListarUsuarios.php"><i class="fa fa-circle-o"></i> Listar Usuarios</a></li>
-                    <li><a href="CrearUsuarios.php"><i class="fa fa-circle-o"></i> Crear Usuarios</a></li>                     
+                    <li><a href="ListarUsuarios.php"><i class="fa fa-circle-o"></i> Listar Usuarios</a></li>                     
+                    <li><a href="ListarLeads.php"><i class="fa fa-circle-o"></i> Listar Leads</a></li>
+                    <li><a href="ListarClientes.php"><i class="fa fa-circle-o"></i> Listar Clientes</a></li>
                 </ul>
             </li>
 
             <li class="treeview">
                 <a href="javascript:void(0);">
-                    <i class="fa fa-book"></i> <span>Ventas</span>
+                    <i class="fa fa-book"></i> <span>Recursos Ventas</span>
                     <span class="pull-right-container">
                         <i class="fa fa-angle-left pull-right"></i>
                     </span>

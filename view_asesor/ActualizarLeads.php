@@ -125,7 +125,7 @@ $con->desconectar();
 
                                         <div class="form-group">
                                             <label for="telefonos">*Telefonos</label>
-                                            <input type="text" class="form-control" id="telefonos" placeholder="Ingrese Telefonos" value="<?php echo $rsLead[0]['telefonos'] ?>">
+                                            <input type="text" class="form-control" id="telefonos" disabled="true" placeholder="Ingrese Telefonos" value="<?php echo $rsLead[0]['telefonos'] ?>">
                                         </div>
 
 

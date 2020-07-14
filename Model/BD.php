@@ -16,7 +16,7 @@ class BD {
             ));
             $this->con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
-            print "�Error!: " . $e->getMessage() . "<br/>";
+            print "Error!: " . $e->getMessage() . "<br/>";
             die();
         }
     }
@@ -53,6 +53,19 @@ class BD {
         return $this->rs;
     }
 
+    
+     public function login($query, $fields = array(),$opc = false) {        
+        $this->stm = $this->con->prepare($query);     
+        $this->stm->execute([$fields[0],$fields[1]]);
+        if ($opc) {
+            $this->rs = $this->stm->fetchAll(PDO::FETCH_OBJ);
+        } else {
+            $this->rs = $this->stm->fetchAll(PDO::FETCH_ASSOC);
+        }
+        return $this->rs;
+    }
+    
+    
     public function findAll2($query, $opc = false) {
         $this->stm = $this->con->prepare($query);
         $this->stm->execute();
@@ -85,8 +98,7 @@ class BD {
             return $this->stm->rowCount();
         } catch (Exception $ex) {
             $this->con->rollBack();
-            //echo $ex->getCode();
-            return $ex->getCode();
+            return $ex;
         }
     }
 

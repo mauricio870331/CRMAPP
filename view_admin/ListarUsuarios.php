@@ -1,5 +1,6 @@
 <?php
 session_start();
+require '../Model/BD.php';
 ?>
 <!DOCTYPE html>
 <html>
@@ -96,8 +97,7 @@ session_start();
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <?php
-                                            include '../Model/BD.php';
+                                            <?php                                         
                                             include '../Model/Usuarios/listUsers.php';
                                             ?>                                           
                                         </tbody>                                        

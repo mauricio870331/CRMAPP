@@ -5,7 +5,7 @@ require '../BD.php';
 $con = new BD();
 try {
 
-    $descripcion = $_POST['descripcion'];  
+    $descripcion = $_POST['descripcion'];
 
     $foto = null;
     $extension = null;
@@ -16,12 +16,12 @@ try {
         $ext = pathinfo($nombre_archivo);
         $extension = $ext['extension'];
         $ruta = "../../RecursosVentas";
-        $relativaRuta = "../RecursosVentas";       
+        $relativaRuta = "../RecursosVentas";
         $subir = move_uploaded_file($archivo, $ruta . "/" . $descripcion . "." . $extension);
     }
-    $SQL_INSERT = "INSERT INTO recursos (descripcion,ruta, ext, fecha_registro, nombre_archivo) "
+    $SQL_INSERT = "INSERT INTO recursos (descripcion,ruta, ext, fecha_registro, nombre_archivo, create_by) "
             . "VALUES ('" . $descripcion . "','" . $relativaRuta . "/','" . $extension . "'"
-            . ", NOW(), '" . $descripcion . "." . $extension . "')";
+            . ", NOW(), '" . $descripcion . "." . $extension . "', " . $_SESSION['obj_user'][0]["id"] . ")";
 
     if ($con->exec($SQL_INSERT) > 0) {
         echo json_encode("ok");

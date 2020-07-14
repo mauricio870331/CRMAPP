@@ -21,32 +21,6 @@ $(document).ready(function () {
     });
 
 
-    $("#CrearVehiculosSystem").click(function () {
-        redireccionarPagina('CrearVehiculosSystem.php');
-    });
-
-
-    $("#backListVehiculos").click(function () {
-        redireccionarPagina('ListarVehiculos.php');
-    });
-
-    $("#backListVehiculos2").click(function () {
-        redireccionarPagina('VerInfoVehiculo.php?token=' + $(this).data("id"));
-    });
-
-    $(".updateVehiculo").click(function () {
-        redireccionarPagina('ActualizarVehiculosSystem.php?token=' + $(this).data("id"));
-    });
-
-    $(".addDocument").click(function () {
-        redireccionarPagina('AddDocuments.php?token=' + $(this).data("id"));
-    });
-
-    $(".addPropietario").click(function () {
-        redireccionarPagina('AddPropietarios.php?token=' + $(this).data("id"));
-    });
-
-
     $(".seeInfo").click(function () {
         redireccionarPagina('VerInfoVehiculo.php?token=' + $(this).data("id"));
     });
@@ -181,7 +155,6 @@ $(document).ready(function () {
 
     //Crear usuarios
     $("#CrearUsuarios").click(function () {
-
         var campos = ['tipo_doc', 'documento', 'nombres', 'apellidos', 'telefonos', 'tipo_user', 'pass'];
         var val = $('input:radio[name=isCoach]:checked').val();
         if (val == "Si") {
@@ -233,11 +206,8 @@ $(document).ready(function () {
             });
         }
     });
-
-
     //Actualizar usuarios
     $("#ActualizarUsuarios").click(function () {
-
         var campos = ['tipo_doc', 'documento', 'nombres', 'apellidos', 'telefonos', 'tipo_user', 'pass'];
         var val = $('input:radio[name=isCoach]:checked').val();
         if (val == "Si") {
@@ -252,7 +222,6 @@ $(document).ready(function () {
                 $("#" + campos[item]).css("border", "1px solid #d2d6de");
             }
         }
-
         if (countErrors > 0) {
             showAlert("Los campos marcados en rojo son obligatorios..!", "error");
         } else {
@@ -289,8 +258,6 @@ $(document).ready(function () {
             });
         }
     });
-
-
     //Eliminar usuarios
     $("#deleteUser").click(function () {
         var data = new FormData();
@@ -312,9 +279,6 @@ $(document).ready(function () {
             }
         });
     });
-
-
-
     //AddRecursos
     $("#addRecurso").click(function () {
 
@@ -357,18 +321,14 @@ $(document).ready(function () {
             });
         }
     });
-
-
 //Modal delteDoc
     $(".deleteRecurso").click(function () {
         $("#RecursoId" + $(this).data("id")).trigger("click");
         $("#deleteRecurso").attr("data-id", $(this).data("id"));
     });
-
-
     $("#deleteRecurso").click(function () {
         var data = new FormData();
-        data.append("id", $(this).data("id"));     
+        data.append("id", $(this).data("id"));
         $.ajax({
             type: 'POST',
             url: "../Model/Usuarios/DeleteRecurso.php",
@@ -387,6 +347,65 @@ $(document).ready(function () {
         });
     });
     //Fin delteDoc
+//------------------------------------------------------------------------------
+//Friltro en home.
+    $("#filterInHome").click(function () {
+
+        var campos = ['fini', 'ffin'];
+        var countErrors = 0;
+        for (var item in campos) {
+            if ($("#" + campos[item]).val() === ""
+                    || $("#" + campos[item]).val() === "Seleccione") {
+                countErrors++;
+                $("#" + campos[item]).css("border", "1px solid red");
+            } else {
+                $("#" + campos[item]).css("border", "1px solid #d2d6de");
+            }
+        }
+        if (countErrors > 0) {
+            showAlert("Los campos marcados en rojo son obligatorios", "error");
+        } else {
+
+            var data = new FormData();
+            data.append("fini", $("#fini").val());
+            data.append("ffin", $("#ffin").val());
+            if ($("#coach").val() != "") {
+                data.append("coach", $("#coach").val());
+            }
+            if ($("#asesor").val() != "") {
+                data.append("asesor", $("#asesor").val());
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: "../Model/Usuarios/filterHome.php",
+                data: data,
+                dataType: 'json',
+                contentType: false,
+                processData: false,
+                cache: false,
+                success: function (response) {
+
+                    //var json = JSON.stringify(response);
+                    jQuery("#total_leads").text("Total: " + response.total_leads);
+                    jQuery("#notificaiones_pend").text("Total: " + response.notificaiones_pend);
+                    jQuery("#notificaciones_ejec").text("Total: " + response.notificaciones_ejec);
+                    jQuery("#total_clientes").text(response.total_clientes);
+                    jQuery("#total_venta").text("$" + response.total_venta);
+                    jQuery("#total_tranfer").html("$" + response.total_tranfer);
+                    jQuery("#total_proccess").html("$" + response.total_proccess);
+                    jQuery("#total_aprobados").html("$" + response.total_aprobados);
+                    jQuery("#total_caida").html("$" + response.total_caida);
+                    console.log(response.total_leads);
+//                    if (response === "ok") {
+//                        setTimeout(redireccionarPagina('ListarRecursos.php?mensaje=delete'), 5000);
+//                    } else {
+//                        showAlert("Ocurrio un error al eliminar la el afiliado", "error");
+//                    }
+                }
+            });
+        }
+    });
 
 
 
@@ -1354,26 +1373,7 @@ $(document).ready(function () {
     });
 
 
-    $("#buscarRs").click(function () {
-        if (jQuery("#dato").val() == "") {
-            jQuery("#dato").css("border", "1px solid red");
-            showAlert("Debes ingresar un valor", "error");
-            return;
-        }
 
-        jQuery("#dato").css("border", "1px solid #d2d6de");
-
-        $.ajax({
-            type: 'POST',
-            url: "Model/Admin/FindR.php",
-            data: {"dato": $("#dato").val()},
-            dataType: 'html',
-            success: function (response) {
-//                console.log(response);
-                $("#respuesta").html(response);
-            }
-        });
-    });
 
     $("#UpdateDocuments").click(function () {
 
@@ -1417,373 +1417,6 @@ $(document).ready(function () {
     });
 
 
-    $(".deleteDocumento").click(function () {
-        $("#documento" + $(this).data("id")).trigger("click");
-        $("#deleteDocumento").attr("data-id", $(this).data("id"));
-    });
-
-
-    $(".deletePropietario").click(function () {
-        $("#propietario" + $(this).data("id")).trigger("click");
-        $("#deletePropietario").attr("data-id", $(this).data("id"));
-    });
-
-
-    $("#deleteDocumento").click(function () {
-        var data = new FormData();
-        data.append("id", $(this).data("id"));
-        var token = $(this).data("token");
-        $.ajax({
-            type: 'POST',
-            url: "Model/Admin/DeleteDocument.php",
-            data: data,
-            dataType: 'json',
-            contentType: false,
-            processData: false,
-            cache: false,
-            success: function (response) {
-                if (response == "ok") {
-                    setTimeout(redireccionarPagina('VerInfoVehiculo.php?token=' + token + '&mensaje=deleteok'), 5000);
-                } else {
-                    showAlert("Ocurrio un error al actualizar la informaciòn", "error");
-                }
-            }
-        });
-    });
-
-
-    $("#deletePropietario").click(function () {
-        var data = new FormData();
-        data.append("id", $(this).data("id"));
-        var token = $(this).data("token");
-        $.ajax({
-            type: 'POST',
-            url: "Model/Admin/DeletePropietario.php",
-            data: data,
-            dataType: 'json',
-            contentType: false,
-            processData: false,
-            cache: false,
-            success: function (response) {
-                if (response == "ok") {
-                    setTimeout(redireccionarPagina('VerInfoVehiculo.php?token=' + token + '&mensaje=deleteok'), 5000);
-                } else {
-                    showAlert("Ocurrio un error al actualizar la informaciòn", "error");
-                }
-            }
-        });
-    });
-
-
-
-    $("#CrearNewR").click(function () {
-        campos = ['R2', 'tipo'];
-        var countErrors = 0;
-        for (var item in campos) {
-            if ($("#" + campos[item]).val() === "") {
-                countErrors++;
-                $("#" + campos[item]).css("border", "1px solid red");
-            } else {
-                $("#" + campos[item]).css("border", "1px solid #d2d6de");
-            }
-        }
-        if (countErrors > 0) {
-            showAlert("Los campos marcados en rojo son obligatorios..!", "error");
-        } else {
-            var data = new FormData();
-            data.append("codigo", $("#R2").val());
-            data.append("tipo", $("#tipo").val());
-            $.ajax({
-                type: 'POST',
-                url: "Model/Admin/CrearNewR.php",
-                data: data,
-                dataType: 'json',
-                contentType: false,
-                processData: false,
-                cache: false,
-                success: function (response) {
-                    if (response == "ok") {
-                        setTimeout(redireccionarPagina('ListarR.php?mensaje=ok'), 5000);
-                    } else {
-                        showAlert("Ocurrio un error al agregar la informaciòn", "error");
-                    }
-                }
-            });
-        }
-    });
-
-
-    $("#updateR").click(function () {
-        campos = ['R2', 'estado', 'tipo'];
-        var countErrors = 0;
-        for (var item in campos) {
-            if ($("#" + campos[item]).val() === "") {
-                countErrors++;
-                $("#" + campos[item]).css("border", "1px solid red");
-            } else {
-                $("#" + campos[item]).css("border", "1px solid #d2d6de");
-            }
-        }
-        if (countErrors > 0) {
-            showAlert("Los campos marcados en rojo son obligatorios..!", "error");
-        } else {
-            var data = new FormData();
-            data.append("id", $("#id_r").val());
-            data.append("R", $("#R2").val());
-            data.append("estado", $("#estado").val());
-            data.append("tipo", $("#tipo").val());
-            $.ajax({
-                type: 'POST',
-                url: "Model/Admin/UpdateR.php",
-                data: data,
-                dataType: 'json',
-                contentType: false,
-                processData: false,
-                cache: false,
-                success: function (response) {
-                    if (response == "ok") {
-                        setTimeout(redireccionarPagina('ListarR.php?mensaje=updateok'), 5000);
-                    } else {
-                        showAlert("Ocurrio un error al agregar la informaciòn", "error");
-                    }
-                }
-            });
-        }
-    });
-
-
-    $("#deleteR").click(function () {
-        var data = new FormData();
-        data.append("id", $(this).data("id"));
-        $.ajax({
-            type: 'POST',
-            url: "Model/Admin/DeleteR.php",
-            data: data,
-            dataType: 'json',
-            contentType: false,
-            processData: false,
-            cache: false,
-            success: function (response) {
-                if (response == "ok") {
-                    setTimeout(redireccionarPagina('ListarR.php?mensaje=deleteok'), 5000);
-                } else {
-                    showAlert("Ocurrio un error al actualizar la informaciòn", "error");
-                }
-            }
-        });
-    });
-
-
-
-
-//    var userOnline = Number($('.im_online').attr('id'));
-//    var cliqueo = [];
-//    var target = null;
-//    $('#portada').hover(function (e) {
-//        target = $(this);
-//        $(target[0].firstElementChild).fadeIn(200);
-//    }, function () {
-//        $(target[0].firstElementChild).fadeOut(200);
-//    });
-//    var input = document.querySelectorAll("label.check input");
-//    if (input !== null) {
-//        [].forEach.call(input, function (el) {
-//            if (el.checked) {
-//                el.parentNode.classList.add('c_on');
-//            }
-//            el.addEventListener("click", function (event) {
-//                event.preventDefault();
-//                el.parentNode.classList.toggle('c_on');
-//            }, false);
-//        });
-//    }
-
-
-
-    function verificar(timestamp, lastid, user) {
-        $("#campana").removeClass("move");
-        $("#mensajesNotify").removeClass("move");
-        var t; //tiempo
-        jQuery.ajax({
-            type: 'GET',
-            url: "Model/stream.php",
-            data: 'timestamp=' + timestamp + '&lastid=' + lastid + '&user=' + user,
-            dataType: 'json',
-            success: function (response) {
-                clearInterval(t);
-                if (response.status == 'resultados' || response.status == 'vacio') {
-                    t = setTimeout(function () {
-                        verificar(response.timestamp, response.lastid, userOnline);
-                    }, 1000);
-                    if (response.status == 'resultados') {
-                        $("#mensajesCount").text(response.datos.length);
-                        $('#listMensajesNotify').html('');
-                        $('#listMensajesNotify').append('<li class="header">Tienes ' + response.datos.length + ' mensajes</li>');
-                        $('#listMensajesNotify').append('<li><ul class="menu">');
-                        $.each(response.datos, function (i, msg) {
-//inicio mensajes
-                            var msnNotify = '<li><a href="#" id="' + msg.id + '" class="limensajesN">';
-                            msnNotify += '<div class="pull-left">';
-                            msnNotify += '<img src="img/default.jpg" class="img-circle" alt="User Image"/>';
-                            msnNotify += '</div>';
-                            msnNotify += '<h4 class="tittleListmensaje">' + msg.nombre_user + '<small class="totMsn">(' + msg.tot_mensaje + ' mensajes)</small><small class="timemensaje"><i class="fa fa-clock-o"></i> 5 mins</small></h4>';
-                            msnNotify += '<p class="parrafoMensaje">' + msg.mensaje + '</p></a></li>';
-                            $('#listMensajesNotify').append(msnNotify);
-
-//                            if (msg.id_para == userOnline) {
-//                                jQuery.playSound('sounds/notificacion');
-//                            }
-
-                            if ($('#ventana_' + msg.ventana_de).length == 0 && msg.id_para == userOnline) {
-//                                jQuery('#users_online #' + msg.ventana_de + ' .iniciar').click();
-//                                jQuery('#ventana_' + msg.ventana_de + ' .messages').click();
-                                cliqueo.push(msg.ventana_de);
-                            }
-
-
-//                            if (!in_array(msg.ventana_de, cliqueo)) {
-//                                if (jQuery('.messages ul li#' + msg.id).length == 0 && msg.ventana_de > 0) {
-//                                    if (userOnline == msg.id_de) {
-//                                        jQuery('#ventana_' + msg.ventana_de + ' .messages ul').append('<li class="yo" id="' + msg.id + '"><p>' + msg.mensaje + '</p></li>');
-//                                    } else {
-//                                        jQuery('#ventana_' + msg.ventana_de + ' .messages ul').append('<li id="' + msg.id + '"><div class="imgSmall"><img src="' + msg.fotoUser + '" border="0" /></div><p>' + msg.mensaje + '</p></li>');
-//                                    }
-//                                }
-//                            }
-                        });
-                        $('#listMensajesNotify').append('</ul></li><li class="footer"><a href="#">See All Messages</a></li>');
-                        if (response.datos.length > 0) {
-                            $("#mensajesNotify").addClass("move");
-                        }
-                        //fin mensajes
-//                        var altura = jQuery('.messages').offset().top * 10;
-//                        console.log('altura ' + altura)
-//                        jQuery('.messages').animate({scrollTop: altura}, '800');
-//                        console.log(cliqueo);
-
-                    }
-                    cliqueo = [];
-
-                    $('#users_online ul').html('');
-                    $('#users_online ul').append('<li class="header" id="textContacts">Contactos</li>');
-                    $.each(response.users, function (index, user) {
-                        var list = '<li class="active treeview separated">';
-                        list += '<div class="user-panel rightBorder">';
-                        list += '<i class="fa fa-gears fapersonalizado" id="' + user.id + '"></i>';
-                        list += '<div class="pull-left image">';
-                        list += '<img src="Model/imageProfile.php?idUser=' + user.id + '" class="img-circle" alt="User Image" />';
-                        list += '</div>';
-                        list += '<div class="pull-left info">';
-                        list += '<p class="iniciar inip" id="' + userOnline + ':' + user.id + '">' + user.nombres + ' ' + user.apellidos + '</p>';
-                        list += '<a href="#"><i class="fa fa-circle ' + user.text_status + ' my_separated"> </i>' + user.status + '</a></div></div></li>';
-                        $('#users_online ul').append(list);
-                    });
-
-                    //eventos
-                    $("#eventosCount").text(response.eventos.length);
-                    $('#listNotifycations').html('');
-                    $('#listNotifycations').append('<li class="header">Tienes ' + response.eventos.length + ' notificaciones</li>');
-                    $('#listNotifycations').append('<li><ul class="menu">');
-                    $.each(response.eventos, function (index, notif) {
-                        var elNotify = '<li><a href="#" id="' + notif.id_evento + '">';
-                        elNotify += '<i class="fa fa-users text-yellow"></i>' + notif.evento_text.length + '';
-                        elNotify += '</a>';
-                        elNotify += '</li>';
-                        $('#listNotifycations').append(elNotify);
-                    });
-                    $('#listNotifycations').append('<li class="footer"><a href="#">View all</a></li>');
-                    if (response.eventos.length > 0) {
-                        $("#campana").addClass("move");
-                    }
-
-//                    console.log(response.eventos);
-
-                } else if (response.status == 'error') {
-                    alert('Ocurrio un error, actualice la pagina');
-                }
-            },
-            error: function (response) {
-                clearInterval(t);
-                t = setTimeout(function () {
-                    verificar(timestamp, lastid, userOnline);
-                }, 15000);
-            }
-        });
-    }
-
-
-
-
-    $("#changeImage").click(function () {
-        $("#filePortada").trigger("click");
-        $('#filePortada').change(function () {
-            if ($('#filePortada').val().length > 0) {
-                var inputFile = document.getElementById("filePortada");
-                var file = inputFile.files[0];
-                var data = new FormData();
-                data.append("foto", file);
-                data.append("idUser", userOnline);
-                $.ajax({
-                    type: 'POST',
-                    url: "Model/updatePortada.php",
-                    data: data,
-                    dataType: 'json',
-                    contentType: false,
-                    processData: false,
-                    cache: false,
-                    success: function (response) {
-                        if (response == "ok") {
-                            setTimeout(redireccionarPagina('profile.php'), 3000);
-                        } else {
-                            showAlert("No se realizo ningun cambio", "error");
-                        }
-                    }
-                });
-            } else {
-                return;
-            }
-
-        });
-    });
-    $(".cancelfile").click(function () {
-        $('#file').val("");
-        $(".file").val("Seleccionar..");
-    });
-    $("#actualizar").click(function () {
-        var inputFile = document.getElementById("file");
-        var file = inputFile.files[0];
-//        var inputFile = $('#file')[0].files[0];
-//        var file = inputFile;
-//        console.log(file);
-        var data = new FormData();
-        data.append("foto", file);
-        data.append("idUser", userOnline);
-        data.append("nombres", $("#u_nombres").val());
-        data.append("apellidos", $("#u_apellidos").val());
-        data.append("email", $("#u_email").val());
-        data.append("direccion", $("#u_direccion").val());
-        data.append("telefonos", $("#u_telefonos").val());
-        data.append("cumple", $("#u_cumple").val());
-        $.ajax({
-            type: 'POST',
-            url: "Model/updatePerfil.php",
-            data: data,
-            dataType: 'json',
-            contentType: false,
-            processData: false,
-            cache: false,
-            success: function (response) {
-                if (response == "ok") {
-                    setTimeout(redireccionarPagina('profile.php'), 3000);
-                } else {
-                    showAlert("Ocurrio un error al actualizar la informaciòn", "error");
-                }
-            }
-        });
-    });
-
-
-
 //style : success,info,warn,error
     function showAlert(text, style) {
         $.notify(text, style);
@@ -1815,23 +1448,7 @@ $(document).ready(function () {
             }
         });
     });
-    function addVentana(id, nombre, status) {
-        var ventanas = Number($("#chats .window").length);
-        var pixeles = (260 + 5) * ventanas;
-        var style = 'float:right; position:absolute; bottom:0; right:' + pixeles + 'px';
-        var splitDatos = id.split(':');
-        var id_user = Number(splitDatos[1]);
-        var ventana = "<div class='window' id='ventana_" + id_user + "' style='" + style + "'>";
-        ventana += "<div class='header_window'><a href='#' class='cerrar' >X</a>";
-        ventana += "<span class='name'>" + nombre + "</span>";
-        ventana += "<span id='" + id_user + "' class='" + status + "'></span>";
-        ventana += "</div><div class='body'><div class='messages'>";
-        ventana += "<ul></ul></div><div class='send_messages' id='" + id + "'>";
-        ventana += "<input type='text' name='mensaje' class='msg' id='" + splitDatos[1] + "' data-id='" + id + "' />";
-        ventana += "</div></div></div>";
-        $('#chats').append(ventana);
-    }
-
+   
 
     $('body').on('click', '#users_online section ul li div div p', function () {
 //        console.log('todo bienz');

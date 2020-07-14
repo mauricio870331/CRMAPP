@@ -1,5 +1,6 @@
 <?php
 session_start();
+include '../Model/BD.php';
 ?>
 <!DOCTYPE html>
 <html>
@@ -7,7 +8,7 @@ session_start();
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <link href="../dist/img/Favicon.png" rel="shortcut icon" />
-        <title>Listado de Leads</title>
+        <title>Listado de Personas</title>
         <!-- Tell the browser to be responsive to screen width -->
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
         <!-- Bootstrap 3.3.7 -->
@@ -69,7 +70,7 @@ session_start();
                 <!-- Content Header (Page header) -->
                 <section class="content-header">
                     <h1>
-                        Listado de Leads || <input type="button" id="backInicio" class="btn btn-success"  value="Regresar">
+                        Listado de Leads || <input type="button" id="backInicio" data-view="asesor" class="btn btn-success"  value="Regresar">
                     </h1>                    
                 </section>
 
@@ -77,7 +78,7 @@ session_start();
                 <section class="content">
                     <div class="row">
                         <div class="col-xs-12">
-                            <button type="button" id="crearNuevoLead" class="btn btn-block btn-primary" style="width: 20%;margin-bottom: 1%;" >Crear Usuario</button>
+                            <button type="button" id="crearNuevoLead" class="btn btn-block btn-primary" style="width: 10%;margin-bottom: 1%;" >Nuevo</button>
                         </div>
                     </div>
                     <div class="row">
@@ -89,12 +90,10 @@ session_start();
                                     <table id="example1" class="table table-bordered table-striped table-hover">
                                         <thead>
                                             <tr>
-                                                <th>SS</th>
-                                                <th>Estado</th>   
-                                                <th>Situación</th>  
+                                                <th>#Lead</th>
+                                                <th>Estado</th> 
                                                 <th>Nombres</th>
-                                                <th>Apellidos</th>
-                                                <th>Dirección</th>
+                                                <th>Apellidos</th>                                               
                                                 <th>Telefonos</th>
                                                 <!--<th>Foto</th>--> 
                                                 <th>Acciones</th>
@@ -102,7 +101,6 @@ session_start();
                                         </thead>
                                         <tbody>
                                             <?php
-                                            include '../Model/BD.php';
                                             include '../Model/Leads/ListLeads.php';
                                             ?>                                           
                                         </tbody>                                        

@@ -13,42 +13,26 @@
         </div>      
         <!-- sidebar menu: : style can be found in sidebar.less -->
         <ul class="sidebar-menu" data-widget="tree">
-            <li class="header">Navegaciòn Principal</li>
+            <li class="header">Navegación Principal</li>
 
-            <li class="treeview" id="Inicio">
+            <li class="treeview" id="Inicio" data-view="asesor">
                 <a href="javascript:void(0);" >
-                    <i class="fa fa-home"></i> <span>Inicio</span>  
-                    <span class="pull-right-container">
-                        <i class="fa fa-angle-left pull-right"></i>
-                    </span>
+                    <i class="fa fa-home"></i> <span>Inicio</span>                     
                 </a>                
             </li>
 
             <li class="treeview">
                 <a href="javascript:void(0);">
-                    <i class="fa fa-users"></i> <span>Administración</span>
-                    <span class="pull-right-container">
-                        <i class="fa fa-angle-left pull-right"></i>
-                    </span>
+                    <i class="fa fa-users"></i> <span>Menú</span>                    
                 </a>
                 <ul class="treeview-menu">
                     <li><a href="ListarLeads.php"><i class="fa fa-circle-o"></i> Listar Leads</a></li>
+                    <li><a href="ListarLeads.php"><i class="fa fa-circle-o"></i> Listar Clientes</a></li>
                     <li><a href="CrearLeads.php"><i class="fa fa-circle-o"></i> Crear Lead</a></li>                     
                 </ul>
             </li>
 
-            <li class="treeview">
-                <a href="javascript:void(0);">
-                    <i class="fa fa-automobile"></i> <span>Afiliados</span>
-                    <span class="pull-right-container">
-                        <i class="fa fa-angle-left pull-right"></i>
-                    </span>
-                </a>
-                <ul class="treeview-menu">
-                    <li><a href="ListarAfiliados.php"><i class="fa fa-circle-o"></i> Listar</a></li>
-                    <li><a href="CrearAfiliados.php"><i class="fa fa-circle-o"></i> Crear</a></li>
-                </ul>
-            </li>  
+           
 
 <!--            <li class="treeview">
                 <a href="javascript:void(0);">

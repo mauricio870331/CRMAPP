@@ -3,22 +3,43 @@
 require '../BD.php';
 $con = new BD();
 $id = $_POST['id'];
+$response = array();
 
-$SQL_SELECT = "SELECT * FROM documentos WHERE id_documento = " . $id;
+
+$folder = "Documentos";
+$table_name = "documentos";
+$field = "id_documento";
+if ($_POST['opcion'] == "adjunto") {
+    $folder = "Adjuntos";
+    $table_name = "adjuntos";
+    $field = "id_adjunto";
+}
+
+$SQL_SELECT = "SELECT * FROM " . $table_name . " WHERE " . $field . " = " . $id;
 
 $rs = $con->findAll2($SQL_SELECT);
 
-$ruta = "../../view_asesor/Documentos/" . $rs[0]["ss_persona"] . "/" . $rs[0]["nombre_archivo"];
+$ruta = "../../" . $folder . "/" . $rs[0]["ss_persona"] . "/" . $rs[0]["nombre_archivo"];
+
 
 if (file_exists($ruta)) {
     unlink($ruta);
-    $sql2 = "delete from documentos where id_documento = " . $id;
-    if ($con->exec($sql2) > 0) {
-        echo json_encode("ok");
-    } else {
-        echo json_encode('error');
+    $sql2 = "delete from " . $table_name . " where " . $field . " = " . $id;
+    try {
+        $con->exec($sql2);
+        $response['datalle'] = "Documento eliminado";
+        $response['msg'] = "ok";
+        echo json_encode($response);
+    } catch (Exception $exc) {
+        $response['datalle'] = $exc->getTraceAsString();
+        $response['msg'] = "error";
+        echo json_encode($response);
     }
 } else {
-    echo json_encode('error');
+    $sql2 = "delete from documentos where id_documento = " . $id;
+    $con->exec($sql2);
+    $response['datalle'] = "La el documento no existe..!";
+    $response['msg'] = "ok";
+    echo json_encode($response);
 }
 $con->desconectar();

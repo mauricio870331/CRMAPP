@@ -10,10 +10,11 @@
 .textoc{
     font-weight: bold;
     text-align: center;
+    cursor: pointer;
 }
 
 .acercar{
-   width: 8% !important;
+    width: 8% !important;
 }
 
 #showCoach{
@@ -22,5 +23,30 @@
 
 .coach{
     margin-left: 5px !important;
+}
+
+.titleProduc{
+    margin-top: 4px;
+    border-top: 3px solid #d2d6de;
+    padding-top: 3px;
+    font-weight: bold;
+}
+
+.info_bank{
+    margin-top: 4px;
+    border-top: 3px solid #d2d6de;
+    padding-top: 6px;
+}
+
+.labelInfo{
+    margin-left: 13px;
+    color: #337ab7;
+}
+.up{
+    font-size: 12px;
+}
+
+.textArea{
+    border: 1px solid #d2d6de;
 }
 
