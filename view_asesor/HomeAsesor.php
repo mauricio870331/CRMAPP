@@ -1,6 +1,6 @@
 <?php
 session_start();
-
+date_default_timezone_set('America/Bogota');
 require '../Model/BD.php';
 $con = new BD();
 $hoy = date("Y-m-d");
@@ -134,31 +134,46 @@ $con->desconectar();
                                         <a href="ListarLeads.php" class="small-box-footer">Empezar <i class="fa fa-arrow-circle-right"></i></a>
                                     </div>
                                 </div>
-                                <div class="col-lg-3 col-xs-6">
-                                    <!-- small box -->
-                                    <div class="small-box bg-yellow">
-                                        <div class="inner">
-                                            <h4>Notificaciones Pendientes</h4>
-                                            <h3 id="notificaiones_pend">Total: <?php echo $rscCountNotify[0]['total'] ?></h3>
-                                        </div>
-                                        <div class="icon">
-                                            <i class="fa fa-bell"></i>
-                                        </div>
-                                        <a href="ListarNotificaciones.php?token=<?php echo base64_encode("PENDIENTE"); ?>" class="small-box-footer">Empezar <i class="fa fa-arrow-circle-right"></i></a>
-                                    </div>
-                                </div>
 
                                 <div class="col-lg-3 col-xs-6">
                                     <!-- small box -->
                                     <div class="small-box bg-green">
                                         <div class="inner">
-                                            <h4>Notificaciones Ejecutadas</h4>
-                                            <h3 id="notificaciones_ejec">Total: <?php echo $rscCountNotifyE[0]['total'] ?></h3>
+                                            <h4>Clientes</h4>
+                                            <h3 id="total_leads">Total: <?php echo $rsCliente[0]['total_clientes']; ?></h3>
+                                        </div>
+                                        <div class="icon">
+                                            <i class="fa fa-users"></i>
+                                        </div>
+                                        <a href="ListarClientes.php" class="small-box-footer">Empezar <i class="fa fa-arrow-circle-right"></i></a>
+                                    </div>
+                                </div>
+
+                                <!--<div class="col-lg-3 col-xs-6">
+                               
+                                    <div class="small-box bg-yellow">
+                                        <div class="inner">
+                                            <h4>Notificaciones Pendientes</h4>
+                                            <h3 id="notificaiones_pend">Total: echo $rscCountNotify[0]['total'] ?></h3>
+                                        </div>
+                                        <div class="icon">
+                                            <i class="fa fa-bell"></i>
+                                        </div>
+                                        <a href="ListarNotificaciones.php?token=echo base64_encode("PENDIENTE"); ?>" class="small-box-footer">Empezar <i class="fa fa-arrow-circle-right"></i></a>
+                                    </div>
+                                </div>-->
+
+                                <div class="col-lg-3 col-xs-6">
+                                    <!-- small box -->
+                                    <div class="small-box bg-yellow">
+                                        <div class="inner">
+                                            <h4>Notificaciones Pendientes</h4>
+                                            <h3 id="notificaciones_ejec">Total: <?php echo $rscCountNotify[0]['total'] ?></h3>
                                         </div>
                                         <div class="icon">
                                             <i class="fa fa-bell-slash"></i>
                                         </div>
-                                       <a href="ListarNotificaciones.php?token=<?php echo base64_encode("EJECUTADA"); ?>" class="small-box-footer">Empezar <i class="fa fa-arrow-circle-right"></i></a>
+                                        <a href="ListarNotificaciones.php?token=<?php echo base64_encode("PENDIENTE"); ?>" class="small-box-footer">Empezar <i class="fa fa-arrow-circle-right"></i></a>
                                     </div>
                                 </div>
 

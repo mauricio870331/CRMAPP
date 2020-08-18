@@ -16,7 +16,6 @@ if ($_POST['opcion'] == "adjunto") {
 }
 
 $SQL_SELECT = "SELECT * FROM " . $table_name . " WHERE " . $field . " = " . $id;
-
 $rs = $con->findAll2($SQL_SELECT);
 
 $ruta = "../../" . $folder . "/" . $rs[0]["ss_persona"] . "/" . $rs[0]["nombre_archivo"];
@@ -28,6 +27,7 @@ if (file_exists($ruta)) {
     try {
         $con->exec($sql2);
         $response['datalle'] = "Documento eliminado";
+        $response['option'] = $_POST['opcion'];
         $response['msg'] = "ok";
         echo json_encode($response);
     } catch (Exception $exc) {
@@ -36,9 +36,10 @@ if (file_exists($ruta)) {
         echo json_encode($response);
     }
 } else {
-    $sql2 = "delete from documentos where id_documento = " . $id;
+    $sql2 = "delete from " . $table_name . " where " . $field . " = " . $id;
     $con->exec($sql2);
-    $response['datalle'] = "La el documento no existe..!";
+    $response['datalle'] = "El documento no existe..!";
+    $response['option'] = $_POST['opcion'];
     $response['msg'] = "ok";
     echo json_encode($response);
 }

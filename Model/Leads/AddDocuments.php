@@ -19,18 +19,18 @@ try {
         $table_name = "adjuntos";
     }
 
-    $documentos = array("Carta de Presentación",
+    $documentos = array(
+        "Carta de Presentación",
         "Bienvenida Greenlight",
         "Contrato Greenlight",
         "Acuerdo de Pagos Greenlight",
         "Solicitud de Reportes",
-        "Confirmación de Pagos",
         "Verificacion Greenlight");
     $response = array();
     if (in_array($descripcion, $documentos)) {
 
-        $relativaRuta = "../Model/PDFLibrary/";
-
+        $relativaRuta = "../Documentos/" . $documento . "/";
+        $formato = "";
         switch ($descripcion) {
             case "Carta de Presentación":
                 require '../PDFLibrary/CartaPresentacionClass.php';
@@ -38,9 +38,7 @@ try {
                 $carta->setName($_POST['nombre_cliente']);
                 $carta->setSs($documento);
                 $carta->Generar();
-                $command = "java -jar C:\\\\xampp\\\htdocs\\\CRMAPP\\\Model\\\PDFLibrary\\\dist\\\Mailer.jar Carta_" . $_POST['ss'] . "";
-                $SQL_INSERT3 = "INSERT INTO  documentos (descripcion,ruta, ext, ss_persona, fecha_registro, nombre_archivo, asesor) "
-                        . "VALUES ('" . $descripcion . "','" . $relativaRuta . "' ,'pdf', '" . $documento . "', NOW(), 'Carta_" . $documento . ".pdf', " . $_SESSION['obj_user'][0]['id'] . ")";
+                $formato = "Carta_" . $_POST['ss'];
                 break;
             case "Bienvenida Greenlight":
                 require '../PDFLibrary/BienvenidaClass.php';
@@ -53,9 +51,8 @@ try {
                 $queryPagos = "select concat('Cuota: ',numero_cuota,', Fecha de pago: ',fecha_pago,', Valor: $',FORMAT(valor_cuota,0)) resumen from pagos_producto "
                         . "Where id_producto = " . $rs[0]['id_producto'];
                 $rsPagos = $con->query($queryPagos);
-                
-                print_r($rsPagos);die;
-                
+
+
                 $rs_pagos = array();
                 foreach ($rsPagos[0] as $value) {
                     $rs_pagos[] = $value;
@@ -71,19 +68,108 @@ try {
                 $pdf->numero_cuenta = $rs[0]['numero_cuenta'];
                 $pdf->pagos = $rs_pagos;
                 $pdf->Generar();
-                $command = "java -jar C:\\\\xampp\\\htdocs\\\CRMAPP\\\Model\\\PDFLibrary\\\dist\\\Mailer.jar Bienvenida_" . $_POST['ss'] . "";
-                $SQL_INSERT3 = "INSERT INTO  documentos (descripcion,ruta, ext, ss_persona, fecha_registro, nombre_archivo, asesor) "
-                        . "VALUES ('" . $descripcion . "','" . $relativaRuta . "' ,'pdf', '" . $documento . "', NOW(), 'Bienvenida_" . $documento . ".pdf', " . $_SESSION['obj_user'][0]['id'] . ")";
+                $formato = "Bienvenida_" . $_POST['ss'];
                 break;
+            case "Contrato Greenlight":
+                $query_user = "select p.id, p.direccion, concat(c.ciudad,', ',e.estado) estado_ciudad,"
+                        . " pr.titular, pr.numero_ruta, pr.numero_cuenta, pr.banco, pr.id_producto from personas p "
+                        . "join estado e on e.id = p.id_estado join ciudad c on c.id = p.id_ciudad "
+                        . "join producto pr on pr.ss_persona = p.ss and pr.has_contract = 0 "
+                        . "where p.ss = '" . $_POST['ss'] . "' ORDER by p.id asc LIMIT 1";
+                $rs = $con->findAll2($query_user);
+                $query_pagos = "select  DATE_FORMAT(fecha_pago, '%m-%d-%Y') fecha_pago, valor_cuota from pagos_producto where id_producto = " . $rs[0]["id_producto"];
+                $rs_pagos = $con->findAll2($query_pagos);
+                $arrayPagos = array();
+                for ($index = 0; $index < count($rs_pagos); $index++) {
+                    $arrayPagos[] = array($rs_pagos[$index]["fecha_pago"], $rs_pagos[$index]["valor_cuota"]);
+                }
 
+                require '../PDFLibrary/ContratoClass.php';
+                $contrato = new ContratoClass();
+                $contrato->ss = $_POST['ss'];
+                $contrato->id = $rs[0]["id"];
+                $contrato->name = strtoupper($_POST['nombre_cliente']);
+                $contrato->direccion = $rs[0]["direccion"];
+                $contrato->pais_ciudad = $rs[0]["estado_ciudad"];
+                $contrato->titular_cuenta = $rs[0]["titular"];
+                $contrato->numero_cuenta = encodeAccountNumnber($rs[0]["numero_cuenta"]);
+                $contrato->numero_ruta = $rs[0]["numero_ruta"];
+                $contrato->banco = $rs[0]["banco"];
+                $contrato->pagos = $arrayPagos;
+                $contrato->Generar();
+                $formato = "Contrato_" . $_POST['ss'];
+                break;
+            case "Acuerdo de Pagos Greenlight":
+                $query_user = "select p.id, p.direccion, concat(c.ciudad,', ',e.estado) estado_ciudad,"
+                        . " pr.titular, pr.numero_ruta, pr.numero_cuenta, pr.banco, pr.id_producto from personas p "
+                        . "join estado e on e.id = p.id_estado join ciudad c on c.id = p.id_ciudad "
+                        . "join producto pr on pr.ss_persona = p.ss and pr.has_contract = 0 "
+                        . "where p.ss = '" . $_POST['ss'] . "' ORDER by p.id asc LIMIT 1";
+                $rs = $con->findAll2($query_user);
+                $query_pagos = "select  DATE_FORMAT(fecha_pago, '%m-%d-%Y') fecha_pago, valor_cuota from pagos_producto where id_producto = " . $rs[0]["id_producto"];
+                $rs_pagos = $con->findAll2($query_pagos);
+                $arrayPagos = array();
+                for ($index = 0; $index < count($rs_pagos); $index++) {
+                    $arrayPagos[] = array($rs_pagos[$index]["fecha_pago"], $rs_pagos[$index]["valor_cuota"]);
+                }
+
+                require '../PDFLibrary/AcuerdosDePagoClass.php';
+
+                $acuerdo = new AcuerdosDePagoClass();
+                $acuerdo->ss = $_POST['ss'];
+                $acuerdo->titular_cuenta = $rs[0]["titular"];
+                $acuerdo->numero_cuenta = encodeAccountNumnber($rs[0]["numero_cuenta"]);
+                $acuerdo->numero_ruta = $rs[0]["numero_ruta"];
+                $acuerdo->banco = $rs[0]["banco"];
+                $acuerdo->pagos = $arrayPagos;
+                $acuerdo->Generar();
+                $formato = "AcuerdoDePagos_" . $_POST['ss'];
+                break;
+            case "Solicitud de Reportes":
+
+                $query_user = "select p.id, p.direccion, concat(c.ciudad,', ',e.estado) estado_ciudad,"
+                        . " DATE_FORMAT(p.dob , '%d/%m/%Y') dob from personas p "
+                        . "join estado e on e.id = p.id_estado join ciudad c on c.id = p.id_ciudad "
+                        . "where p.ss = '" . $_POST['ss'] . "' ORDER by p.id asc LIMIT 1";
+
+                $rs = $con->findAll2($query_user);
+
+                require '../PDFLibrary/SolicitudReportes.php';
+
+                $sReportes = new SolicitudReportes();
+                $sReportes->ss = $_POST['ss'];
+                $sReportes->name = strtoupper($_POST['nombre_cliente']);
+                $sReportes->direccion = $rs[0]["direccion"];
+                $sReportes->ciudad = $rs[0]["estado_ciudad"];
+                $sReportes->fecha_nacimiento = $rs[0]["dob"];
+                $sReportes->Generar();
+                $formato = "SolicitudReporte_" . $_POST['ss'];
+
+                break;
+            case "Verificacion Greenlight":
+
+                require '../PDFLibrary/VerificacionClass.php';
+
+                $verificacion = new VerificacionClass();
+                $verificacion->name = $_SESSION['obj_user'][0]['nombre_completo'];
+                $verificacion->ss = $_POST['ss'];
+                $verificacion->Generar();
+                $formato = "Verificacion_" . $_POST['ss'];
+
+                break;
             default:
                 break;
         }
+
         if ($_POST['enviar'] == "true") {
+            $command = "java -jar C:\\\\xampp\\\htdocs\\\CRMAPP\\\Model\\\PDFLibrary\\\dist\\\Mailer.jar " . $formato . "";
             $SQL_INSERT = "INSERT INTO queues (job, exec) "
                     . "values ('" . $command . "',0) ";
             $result = $con->exec($SQL_INSERT);
         }
+
+        $SQL_INSERT3 = "INSERT INTO  documentos (descripcion,ruta, ext, ss_persona, fecha_registro, nombre_archivo, asesor) "
+                . "VALUES ('" . $descripcion . "','" . $relativaRuta . "' ,'pdf', '" . $documento . "', NOW(), '" . $formato . ".pdf', " . $_SESSION['obj_user'][0]['id'] . ")";
         $result = $con->exec($SQL_INSERT3);
     } else {
         $foto = null;
@@ -125,3 +211,12 @@ try {
     $con->desconectar();
 }
 
+function encodeAccountNumnber($numero_cuenta) {
+    $total_chars = strlen($numero_cuenta);
+    $last4chars = substr($numero_cuenta, $total_chars - 4);
+    $encodeAccount = "";
+    for ($index = 0; $index < $total_chars - 4; $index++) {
+        $encodeAccount .= "X";
+    }
+    return $encodeAccount . $last4chars;
+}

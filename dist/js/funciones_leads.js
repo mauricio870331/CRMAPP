@@ -1,22 +1,22 @@
 //GetCities
-$('#id_ciudad').change(function () {
+$('#id_estado').change(function () {
     if (this.value !== "") {
         var data = new FormData();
-        data.append("id_ciudad", this.value);
+        data.append("id_estado", this.value);
         $.ajax({
             type: 'POST',
-            url: "../Model/Utilidades/listEstados.php",
+            url: "../Model/Utilidades/listCiudad.php",
             data: data,
             dataType: 'html',
             contentType: false,
             processData: false,
             cache: false,
             success: function (response) {
-                $("#id_estado").html(response);
+                $("#id_ciudad").html(response);
             }
         });
     } else {
-        $("#id_estado").html("<option value=''>Seleccione</option>");
+        $("#id_ciudad").html("<option value=''>Seleccione</option>");
     }
 });
 //------------------------------------------------------------------------------
@@ -37,12 +37,14 @@ $("#backInicio").click(function () {
 });
 //------------------------------------------------------------------------------
 //Crear Leads
-$("#crearNuevoLead").click(function () {
-    redireccionarPagina('CrearLeads.php');
-});
 $("#backCrearLead").click(function () {
     redireccionarPagina('ListarLeads.php');
 });
+
+$("#crearNuevoLead").click(function () {
+    redireccionarPagina('CrearLeads.php');
+});
+
 $("#CrearLead").click(function () {
     var campos = ['ss', 'nombres', 'apellidos', 'direccion', 'telefonos', 'cita', 'id_ciudad', 'id_estado', 'hora_cita', 'email'];
     var countErrors = 0;
@@ -151,8 +153,12 @@ $(".moreinfoLead").click(function () {
     redireccionarPagina('Profile.php?token=' + $(this).data("id"));
 });
 //Regresar al perfil
-$("#backfromProfile").click(function () {
-    redireccionarPagina('ListarLeads.php');
+$("#backfromProfile").click(function () {    
+    if ($(this).data("user") === "CLIENTE") {
+        redireccionarPagina('ListarClientes.php');
+    } else {
+        redireccionarPagina('ListarLeads.php');
+    }
 });
 //Modal Documentos
 $(".newDocument").click(function () {
@@ -257,7 +263,7 @@ $("#deleteDoc").click(function () {
         success: function (response) {
 //            console.log(response);
             if (response.msg == "ok") {
-                if ($(this).data("option") == "documento") {
+                if (response.option == "documento") {
                     setTimeout(redireccionarPagina('Profile.php?token=' + ss + '&mensaje=deletedoc'), 5000);
                 } else {
                     setTimeout(redireccionarPagina('Profile.php?token=' + ss + '&mensaje=deleteadjunto'), 5000);
@@ -270,6 +276,88 @@ $("#deleteDoc").click(function () {
 });
 //Fin delteDoc
 //------------------------------------------------------------------------------
+
+//Modal ConfirmDisputas
+$(".newDocDisputa").click(function () {
+    var textTd = $("#t_disputas tbody tr td").text();
+    var nColumnas = $("#t_disputas tbody tr:last td").length;
+    if (nColumnas === 1 && textTd === "No data available in table") {
+        showAlert("No hay disputas generadas para este cliente...!", "warn");
+        return;
+    }
+    $("#newDocDisp" + $(this).data("id")).trigger("click");
+    $("#addDocDisp").attr("data-id", $(this).data("id"));
+});
+
+//Add Disputa
+$("#addDocDisp").click(function () {
+    var data = new FormData();
+    data.append("ss", $(this).data("id"));
+    $.ajax({
+        type: 'POST',
+        url: "../Model/Leads/AddDocDisputa.php",
+        data: data,
+        dataType: 'json',
+        contentType: false,
+        processData: false,
+        cache: false,
+        success: function (response) {
+            if (response.msn !== "error") {
+                setTimeout(redireccionarPagina('Profile.php?token=' + btoa(response.ss) + '&mensaje=documento'), 5000);
+            } else {
+                showAlert("Ocurrio un error al crear el documento", "error");
+            }
+        }
+    });
+
+});
+//----------------------------------------------------------------------------
+//Modal Respuesta disputa
+$(".rptaDisputa").click(function () {
+    $("#rptaDisputa" + $(this).data("id")).trigger("click");
+    $("#addRptaDisputa").attr("data-id", $(this).data("id"));
+});
+
+//AddNota
+$("#addRptaDisputa").click(function () {
+    var campos = ['select_bureau', 'select_respuesta'];
+    var countErrors = 0;
+    for (var item in campos) {
+        if ($("#" + campos[item]).val() === "") {
+            countErrors++;
+            $("#" + campos[item]).css("border", "1px solid red");
+        } else {
+            $("#" + campos[item]).css("border", "1px solid #d2d6de");
+        }
+    }
+    if (countErrors > 0) {
+        showAlert("Los campos marcados en rojo son obligatorios", "error");
+    } else {
+        var data = new FormData();
+        data.append("bureau", $("#select_bureau").val());
+        data.append("respuesta", $("#select_respuesta").val());
+        data.append("id_disputa", $(this).data("id"));
+        data.append("ss", $(this).data("ss"));
+        $.ajax({
+            type: 'POST',
+            url: "../Model/Leads/AddAnswerDisputa.php",
+            data: data,
+            dataType: 'json',
+            contentType: false,
+            processData: false,
+            cache: false,
+            success: function (response) {
+                if (response.msn !== "error") {
+                    setTimeout(redireccionarPagina('Profile.php?token=' + response.ss + '&mensaje=rptadisputaOk'), 5000);
+                } else {
+                    showAlert("Ocurrio un error al crear el documento", "error");
+                }
+            }
+        });
+    }
+});
+//-------------------Fin add respuesta ----------------------------------------
+
 
 //Modal Notas
 $(".newNota").click(function () {
@@ -440,8 +528,57 @@ $("#deleteRec").click(function () {
 });
 
 
+//Modal Disputas
+$(".newDisputa").click(function () {
+    $("#newDisputa" + $(this).data("id")).trigger("click");
+    $("#addDisputa").attr("data-ss", $(this).data("id"));
+});
+
+//Add Disputas
+$("#addDisputa").click(function () {
+    var campos = ['pcuenta', 'num_cuenta', 'razon'];
+    var countErrors = 0;
+    for (var item in campos) {
+        if ($("#" + campos[item]).val() === "") {
+            countErrors++;
+            $("#" + campos[item]).css("border", "1px solid red");
+        } else {
+            $("#" + campos[item]).css("border", "1px solid #d2d6de");
+        }
+    }
+    if (countErrors > 0) {
+        showAlert("Los campos marcados en rojo son obligatorios", "error");
+    } else {
+        var data = new FormData();
+        data.append("cuenta", $("#pcuenta").val());
+        data.append("num_cuenta", $("#num_cuenta").val());
+        data.append("razon", $("#razon").val());
+        data.append("observacion", $("#observacion").val());
+        data.append("ss", $(this).data("ss"));
+
+        $.ajax({
+            type: 'POST',
+            url: "../Model/Leads/AddDisputa.php",
+            data: data,
+            dataType: 'json',
+            contentType: false,
+            processData: false,
+            cache: false,
+            success: function (response) {
+                if (response !== "error") {
+                    setTimeout(redireccionarPagina('Profile.php?token=' + btoa(response) + '&mensaje=disputaOk'), 5000);
+                } else {
+                    showAlert("Ocurrio un error al crear el documento", "error");
+                }
+            }
+        });
+    }
+});
+
+
 
 $(".changeStatus").click(function () {
+
     var data = new FormData();
     data.append("id", $(this).data("id"));
     data.append("estado", $(this).data("opction"));
@@ -476,8 +613,11 @@ $("#seeNotify").click(function () {
     $("#tabAdjuntos").removeClass("active");
     $("#notas").removeClass("active");
     $("#tabNotas").removeClass("active");
+    $("#disputas").removeClass("active");
+    $("#tabDisputas").removeClass("active");
     $("#recordatorios").addClass("active");
     $("#tabRecordatorios").addClass("active");
+
 });
 
 //Estados notificaciones
@@ -950,6 +1090,7 @@ $(".sendPresentation").click(function () {
     var data = new FormData();
     data.append("ss", $(this).data("ss"));
     data.append("name", $(this).data("name"));
+    data.append("email", $(this).data("email"));
     $.ajax({
         type: 'POST',
         url: "../Model/PDFLibrary/CartaPresentacion.php",
@@ -974,6 +1115,7 @@ $(".sendFile").click(function () {
     var data = new FormData();
     data.append("ss", $(this).data("ssocial"));
     data.append("type_doc", $(this).data("type"));
+    data.append("email", $(this).data("email"));
     $.ajax({
         type: 'POST',
         url: "../Model/Utilidades/ReSendDoc.php",

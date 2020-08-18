@@ -56,9 +56,14 @@
                             . " and estado in ('Pendiente') limit 10";
                     if (strpos($_SERVER["REQUEST_URI"], "Profile") !== false) {
                         $SQL_SELECT = "SELECT * FROM recordatorios"
-                                . " where _to = " . $_SESSION['obj_user'][0]['id'] . ""
-                                . " and estado in ('Pendiente') and ss_persona = '" . base64_decode($_GET['token']) . "' limit 10";
+                                . " where ( _to = " . $_SESSION['obj_user'][0]['id'] . " or _to = 0)"
+                                . " and (estado in ('Pendiente') or pending_to like '%".$_SESSION['obj_user'][0]['id']."%' )"
+                                . " and ss_persona = '" . base64_decode($_GET['token']) . "' limit 10";
                     }
+                    
+//                    echo $SQL_SELECT;die;
+                    
+                    
                     $list = $con->query($SQL_SELECT);
 //                    echo "<pre>";
 //                    print_r($list);die;                    

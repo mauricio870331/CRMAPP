@@ -978,7 +978,11 @@ $(document).ready(function () {
     });
 
     $("#backInicio").click(function () {
-        redireccionarPagina('HomeAdmin.php');
+        if ($(this).data("view") === "asesor") {
+            redireccionarPagina('HomeAsesor.php');
+        } else {
+            redireccionarPagina('HomeAdmin.php');
+        }
     });
 
     $("#Inicio").click(function () {
@@ -1448,7 +1452,7 @@ $(document).ready(function () {
             }
         });
     });
-   
+
 
     $('body').on('click', '#users_online section ul li div div p', function () {
 //        console.log('todo bienz');

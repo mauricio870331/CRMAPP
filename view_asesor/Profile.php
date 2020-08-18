@@ -21,8 +21,8 @@ $SQL_SELECT = "SELECT u.*, concat(asesor.nombres, ' ', asesor.apellidos) asesor,
 $rsLead = $con->findAll2($SQL_SELECT);
 
 
-/*$SQL_SELECT_NOTIFY = "select count(id) total from notificacion_personas where documento_persona = '" . base64_decode($_GET['token']) . "'";
-$rsNot = $con->findAll2($SQL_SELECT_NOTIFY);*/
+/* $SQL_SELECT_NOTIFY = "select count(id) total from notificacion_personas where documento_persona = '" . base64_decode($_GET['token']) . "'";
+  $rsNot = $con->findAll2($SQL_SELECT_NOTIFY); */
 
 
 $con->desconectar();
@@ -77,7 +77,7 @@ $con->desconectar();
                 <!-- Content Header (Page header) -->
                 <section class="content-header">
                     <h1>
-                        Perfil | <button type="button" id="backfromProfile" data-view="asesor" class="btn btn-success">Regresar</button>
+                        Perfil | <button type="button" id="backfromProfile" data-view="asesor" data-user="<?php echo $rsLead[0]['situacion'] ?>" class="btn btn-success">Regresar</button>
                     </h1>                    
                 </section>
                 <!-- Main content -->
@@ -195,6 +195,7 @@ $con->desconectar();
                                             -->                 
                                             <span class="pull badge bg-green sendPresentation" 
                                                   data-ss="<?php echo $rsLead[0]['ss'] ?>"
+                                                  data-email="<?php echo $rsLead[0]['email'] ?>"
                                                   data-name="<?php echo $rsLead[0]['nombres'] . " " . $rsLead[0]['apellidos'] ?>"                                                  
                                                   style="font-size: 15px;cursor: pointer;margin-bottom: 5px;">Enviar Carta de Presentación</span>
                                         </div>
@@ -213,7 +214,8 @@ $con->desconectar();
                                                     <tbody>  
                                                         <?php
                                                         $con = new BD();
-                                                        $SQL_SELECT = "SELECT * from documentos where ss_persona =" . base64_decode($_GET['token']);
+                                                        $SQL_SELECT = "SELECT * from documentos where ss_persona ='" . base64_decode($_GET['token']) . "'";
+
                                                         $rsDocs = $con->findAll2($SQL_SELECT);
                                                         $con->desconectar();
                                                         ?>
@@ -278,7 +280,7 @@ $con->desconectar();
                                         </div>
                                         <div class="box">                                        
                                             <div class="box-body">
-                                                <table id="example2" class="table table-bordered table-striped table-hover">
+                                                <table id="tbl_producto" class="table table-bordered table-striped table-hover">
                                                     <thead>
                                                         <tr>
                                                             <th>Producto</th>
@@ -381,7 +383,7 @@ $con->desconectar();
                                         </div>
                                         <div class="box">                                            
                                             <div class="box-body">
-                                                <table id="example1" class="table table-bordered table-striped table-hover">
+                                                <table id="tbl_adjuntos" class="table table-bordered table-striped table-hover">
                                                     <thead>
                                                         <tr>
                                                             <th>#</th>
@@ -431,7 +433,7 @@ $con->desconectar();
                                         </div>
                                         <div class="box">                                            
                                             <div class="box-body">
-                                                <table id="example1" class="table table-bordered table-striped table-hover">
+                                                <table id="tbl_notas" class="table table-bordered table-striped table-hover">
                                                     <thead>
                                                         <tr>
                                                             <th>#</th>
@@ -494,7 +496,7 @@ $con->desconectar();
                                         </div>
                                         <div class="box">                                            
                                             <div class="box-body">
-                                                <table id="example1" class="table table-bordered table-striped table-hover">
+                                                <table id="tbl_recordatorio" class="table table-bordered table-striped table-hover">
                                                     <thead>
                                                         <tr>
                                                             <th>#</th>
@@ -507,8 +509,8 @@ $con->desconectar();
                                                     <tbody>  
                                                         <?php
                                                         $con = new BD();
-                                                        $SQL_SELECT = "SELECT * from recordatorios where ss_persona = '" . base64_decode($_GET['token']) . "'"
-                                                                . " and _to =" . $_SESSION['obj_user'][0]['id'];
+                                                        $SQL_SELECT = "SELECT * from recordatorios where ss_persona = '" . base64_decode($_GET['token']) . "' "
+                                                                . " and _to in (" . $_SESSION['obj_user'][0]['id'] . ", 0)";
                                                         $rsRec = $con->findAll2($SQL_SELECT);
                                                         $con->desconectar();
                                                         ?>
@@ -520,9 +522,20 @@ $con->desconectar();
                                                                 <td>
                                                                     <a class="textoc">
                                                                         <?php
+                                                                        $estado = $rsRec[$i]['estado'];
                                                                         switch ($rsRec[$i]['estado']) {
                                                                             case "Completado":
                                                                                 $bg = "bg-green";
+                                                                                break;
+                                                                            case "Completado_to"://                                                                              
+                                                                                $elements = explode(",", $rsRec[$i]["complete_to"]);
+                                                                                if (in_array($_SESSION['obj_user'][0]['id'], $elements)) {
+                                                                                    $bg = "bg-green";
+                                                                                    $estado = "Completado";
+                                                                                } else {
+                                                                                    $bg = "bg-blue";
+                                                                                    $estado = "Pendiente";
+                                                                                }
                                                                                 break;
                                                                             case "Pendiente":
                                                                                 $bg = "bg-blue";
@@ -533,30 +546,14 @@ $con->desconectar();
                                                                         }
                                                                         ?>
                                                                         <span class="pull badge <?php echo $bg; ?>">
-                                                                            <?php echo $rsRec[$i]['estado'] ?>
+                                                                            <?php echo $estado ?>
                                                                         </span>
                                                                     </a>
                                                                 </td>
                                                                 <td>
 
                                                                     <!-- acciones para cambiar estaos --> 
-                                                                    <?php if ($rsRec[$i]['estado'] == "Pendiente") { ?>
-
-                                                                        <div class="col-md-3 col-sm-4" style="margin-right: -5%;">
-                                                                            <i class="fa fa-fw fa-edit newRecordatorio" data-id="<?php echo $rsRec[$i]['id_recordatorio'] ?>"
-                                                                               data-ss="<?php echo base64_decode($_GET['token']) ?>" 
-                                                                               data-desc="<?php echo $rsRec[$i]['descripcion'] ?>" data-vence="<?php echo $rsRec[$i]['vence'] ?>"
-                                                                               data-option="update" data-toggle="tooltip" title="Editar"></i>
-                                                                            <button type="button" style="display: none" class="btn btn-default" data-toggle="modal" data-target="#modal-nota" id="newRemember<?php echo $rsRec[$i]['id_recordatorio'] ?>"/>
-                                                                        </div>
-
-                                                                        <div class="col-md-3 col-sm-4" style="margin-right: -5%;">
-                                                                            <i class="fa fa-fw fa-eraser deleteRecordatorio" 
-                                                                               data-ss="<?php echo $_GET['token'] ?>" 
-                                                                               data-id="<?php echo $rsRec[$i]['id_recordatorio'] ?>"
-                                                                               data-toggle="tooltip" title="Borrar"></i>
-                                                                            <button type="button" style="display: none" class="btn btn-default" data-toggle="modal" data-target="#modal-deleteRec" id="recId<?php echo $rsRec[$i]['id_recordatorio'] ?>"/>
-                                                                        </div>
+                                                                    <?php if ($estado == "Pendiente") { ?>
 
                                                                         <div class="col-md-3 col-sm-4" style="margin-right: -5%;">
                                                                             <i class="fa fa-fw fa-check changeStatus" 
@@ -566,13 +563,33 @@ $con->desconectar();
                                                                                data-toggle="tooltip" title="Completar"></i>                                                                        
                                                                         </div>
 
-                                                                        <div class="col-md-3 col-sm-4" style="margin-right: -5%;">
-                                                                            <i class="fa fa-fw fa-close changeStatus" 
-                                                                               data-ss="<?php echo $_GET['token'] ?>" 
-                                                                               data-id="<?php echo $rsRec[$i]['id_recordatorio'] ?>"
-                                                                               data-opction="Cancelado"
-                                                                               data-toggle="tooltip" title="Cancelar"></i>                                                                        
-                                                                        </div>
+                                                                        <?php if ($rsRec[$i]['_to'] != 0) { ?>
+
+                                                                            <div class="col-md-3 col-sm-4" style="margin-right: -5%;">
+                                                                                <i class="fa fa-fw fa-edit newRecordatorio" data-id="<?php echo $rsRec[$i]['id_recordatorio'] ?>"
+                                                                                   data-ss="<?php echo base64_decode($_GET['token']) ?>" 
+                                                                                   data-desc="<?php echo $rsRec[$i]['descripcion'] ?>" data-vence="<?php echo $rsRec[$i]['vence'] ?>"
+                                                                                   data-option="update" data-toggle="tooltip" title="Editar"></i>
+                                                                                <button type="button" style="display: none" class="btn btn-default" data-toggle="modal" data-target="#modal-nota" id="newRemember<?php echo $rsRec[$i]['id_recordatorio'] ?>"/>
+                                                                            </div>
+
+                                                                            <div class="col-md-3 col-sm-4" style="margin-right: -5%;">
+                                                                                <i class="fa fa-fw fa-eraser deleteRecordatorio" 
+                                                                                   data-ss="<?php echo $_GET['token'] ?>" 
+                                                                                   data-id="<?php echo $rsRec[$i]['id_recordatorio'] ?>"
+                                                                                   data-toggle="tooltip" title="Borrar"></i>
+                                                                                <button type="button" style="display: none" class="btn btn-default" data-toggle="modal" data-target="#modal-deleteRec" id="recId<?php echo $rsRec[$i]['id_recordatorio'] ?>"/>
+                                                                            </div>
+
+
+                                                                            <div class="col-md-3 col-sm-4" style="margin-right: -5%;">
+                                                                                <i class="fa fa-fw fa-close changeStatus" 
+                                                                                   data-ss="<?php echo $_GET['token'] ?>" 
+                                                                                   data-id="<?php echo $rsRec[$i]['id_recordatorio'] ?>"
+                                                                                   data-opction="Cancelado"
+                                                                                   data-toggle="tooltip" title="Cancelar"></i>                                                                        
+                                                                            </div>
+                                                                        <?php } ?>
                                                                     <?php } ?>
 
 
@@ -1011,6 +1028,10 @@ $con->desconectar();
 
             $(function () {
                 $('#example1').DataTable();
+                $('#tbl_producto').DataTable();
+                $('#tbl_adjuntos').DataTable();
+                $('#tbl_notas').DataTable();
+                $('#tbl_recordatorio').DataTable();
 
                 $('#fecha_pago').datepicker({
                     autoclose: true,

@@ -14,6 +14,7 @@ function conexion() {
         
        
         foreach ($rs as $key => $value) {
+//            echo $value["job"];die;
             exec($value["job"], $output);
             $SQL_UPDATE = "update queues set exec = 1 where id = " . $value["id"];
             try {

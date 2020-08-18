@@ -10,14 +10,13 @@ if ($_SESSION['obj_user'][0]['descripcion'] == 'ADMINISTRADOR') {
 }
 
 if (isset($_POST['field']) && $_POST['field'] != "") {
-    
-   $pos = strpos($where, "asesor");
-   if ($pos === false) {
-       $where .= " where (u.nombres like '%" . $field . "%' or u.apellidos like '%" . $field . "%' or u.documento like '%" . $field . "%')";
-   }else{
-       $where .= " AND (u.nombres like '%" . $field . "%' or u.apellidos like '%" . $field . "%' or u.documento like '%" . $field . "%')";
-   }    
-   
+
+    $pos = strpos($where, "asesor");
+    if ($pos === false) {
+        $where .= " where (u.nombres like '%" . $field . "%' or u.apellidos like '%" . $field . "%' or u.documento like '%" . $field . "%')";
+    } else {
+        $where .= " AND (u.nombres like '%" . $field . "%' or u.apellidos like '%" . $field . "%' or u.documento like '%" . $field . "%')";
+    }
 }
 
 
@@ -46,15 +45,15 @@ foreach ($rs as $key => $value) {
         </td>
         <!--<td>           
             <span class="label label-success">  
-                <?php //echo $value['situacion']; ?>
+        <php //echo $value['situacion'];  ?>
             </span>
         </td>-->
 
         <td><?php echo $value['nombres']; ?></td>
         <td><?php echo $value['apellidos']; ?></td>
-       
+
         <td><?php echo $value['telefonos']; ?></td>
-        <!--<td><img src="Model/Usuarios/imageProfile.php?id=<?php // echo $value['id']; ?>" style="max-width: 40px;border-radius: 10%" alt="User Image"></td>-->                                                
+        <!--<td><img src="Model/Usuarios/imageProfile.php?id=<?php // echo $value['id'];  ?>" style="max-width: 40px;border-radius: 10%" alt="User Image"></td>-->                                                
         <td>
             <div class="col-md-2 col-sm-2" style="margin-right: -3%;">
                 <i class="fa fa-fw fa-eye moreinfoLead"  style="color: blue;cursor: pointer" data-id="<?php echo base64_encode($value['ss']); ?>" data-toggle="tooltip" title="Información detallada"></i>
@@ -65,19 +64,21 @@ foreach ($rs as $key => $value) {
                 </div>
             <?php } ?>
             <div class="col-md-2 col-sm-2" style="margin-left: -3%;">
-                <?php  if ($value['estado'] == "ACTIVO") { ?>
-                    <i class="fa fa-fw fa-warning deleteLead" style="cursor: pointer;color: red;" data-estado="<?php  echo $value['situacion']; ?>" data-option="SUSPENDIDO" data-id="<?php echo $value['id']; ?>" data-toggle="tooltip" title="Suspender"></i>
+                <?php if ($value['estado'] == "ACTIVO") { ?>
+                    <i class="fa fa-fw fa-warning deleteLead" style="cursor: pointer;color: red;" data-estado="<?php echo $value['situacion']; ?>" data-option="SUSPENDIDO" data-id="<?php echo $value['id']; ?>" data-toggle="tooltip" title="Suspender"></i>
                 <?php } else { ?>
-                    <i class="fa fa-fw fa-check deleteLead" style="cursor: pointer;color: green;" data-estado="<?php  echo $value['situacion']; ?>" data-option="ACTIVO" data-id="<?php echo $value['id']; ?>" data-toggle="tooltip" title="Activar"></i>
-                <?php  } ?>
+                    <i class="fa fa-fw fa-check deleteLead" style="cursor: pointer;color: green;" data-estado="<?php echo $value['situacion']; ?>" data-option="ACTIVO" data-id="<?php echo $value['id']; ?>" data-toggle="tooltip" title="Activar"></i>
+                <?php } ?>
                 <button type="button" style="display: none" class="btn btn-default" data-toggle="modal" data-target="#modal-default" id="lead<?php echo $value['id']; ?>"/>
             </div>
-            <div class="col-md-2 col-sm-2" style="margin-left: -3%;">
-                <?php  if ($value['estado'] == "ACTIVO") { ?>                
-                    <i class="fa fa-fw fa-check setClient" style="cursor: pointer;color: green;" data-option="CLIENTE" data-id="<?php echo $value['id']; ?>" data-toggle="tooltip" title="Convertir en Cliente"></i>
-                <?php  } ?>
-                <button type="button" style="display: none" class="btn btn-default" data-toggle="modal" data-target="#modal-setClient" id="client<?php echo $value['id']; ?>"/>
-            </div>
+            <?php if ($_SESSION['obj_user'][0]['descripcion'] == 'ADMINISTRADOR') { ?>
+                <div class="col-md-2 col-sm-2" style="margin-left: -3%;">
+                    <?php  if ($value['estado'] == "ACTIVO") { ?>                
+                        <i class="fa fa-fw fa-check setClient" style="cursor: pointer;color: green;" data-option="CLIENTE" data-id="<?php echo $value['id']; ?>" data-toggle="tooltip" data-placement="right" title="Convertir en Cliente"></i>
+                    <?php  } ?>
+                    <button type="button" style="display: none" class="btn btn-default"  data-toggle="modal" data-target="#modal-setClient" id="client<?php echo $value['id']; ?>"/>
+                </div>
+            <?php } ?>
         </td>
     </tr> 
     <?php

@@ -1,6 +1,8 @@
 <?php
 session_start();
+date_default_timezone_set('America/Bogota');
 include_once '../Model/BD.php';
+$hoy = date("Y-m-d");
 ?>
 <!DOCTYPE html>
 <html>
@@ -101,7 +103,7 @@ include_once '../Model/BD.php';
                                             <label for="direccion">*Direccion</label>
                                             <input type="text" class="form-control" id="direccion" placeholder="Ingrese Direccion">
                                         </div>
-                                        
+
                                         <div class="form-group">
                                             <label for="email">*Email</label>
                                             <input type="text" class="form-control" id="email" placeholder="Ingrese Email">
@@ -120,7 +122,7 @@ include_once '../Model/BD.php';
                                                 <div class="input-group-addon">
                                                     <i class="fa fa-calendar"></i>
                                                 </div>
-                                                <input type="text" class="form-control pull-right" id="dob" />
+                                                <input type="text" value="<?php echo $hoy; ?>" class="form-control pull-right" id="dob" />
                                             </div>
                                             <!-- /.input group -->
                                         </div>
@@ -132,7 +134,7 @@ include_once '../Model/BD.php';
                                                 <div class="input-group-addon">
                                                     <i class="fa fa-calendar"></i>
                                                 </div>
-                                                <input type="text" class="form-control pull-right" id="cita" />
+                                                <input type="text" value="<?php echo $hoy; ?>" class="form-control pull-right" id="cita" />
                                             </div>                                           
                                             <!-- /.input group -->
                                         </div>
@@ -150,31 +152,33 @@ include_once '../Model/BD.php';
                                             <!-- /.input group -->
                                         </div>
 
-
                                         <div class="form-group">
-                                            <label>*Ciudad</label>
-                                            <select class="form-control" name="city" id="id_ciudad">
+                                            <label>*Estado</label>
+                                            <select class="form-control" name="id_estado" id="id_estado">
                                                 <option value="">Seleccione</option>
                                                 <?php
                                                 $con = new BD();
-                                                $SQL_SELECT = "SELECT * FROM ciudad";
+                                                $SQL_SELECT = "SELECT * FROM estado";
                                                 $list = $con->query($SQL_SELECT);
                                                 $con->desconectar();
                                                 for ($index = 0; $index < count($list); $index++) {
                                                     ?>
-                                                    <option value="<?php echo $list[$index]['id']; ?>"><?php echo $list[$index]['ciudad']; ?></option>
+                                                    <option value="<?php echo $list[$index]['id']; ?>"><?php echo $list[$index]['estado']; ?></option>
                                                     <?php
                                                 }
                                                 ?> 
                                             </select>
                                         </div>
 
+
                                         <div class="form-group">
-                                            <label>*Estado</label>
-                                            <select class="form-control" name="estado" id="id_estado">
-                                                <option value="">Seleccione</option>
+                                            <label>*Ciudad</label>
+                                            <select class="form-control" name="id_ciudad" id="id_ciudad">
+                                                <option value="">Seleccione</option>                                                
                                             </select>
                                         </div>
+
+
                                     </div>
                                     <!-- /.box-body -->
                                     <div class="box-footer">

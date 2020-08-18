@@ -3,8 +3,8 @@
 date_default_timezone_set('America/Bogota');
 require('fpdf.php');
 
-class PDF extends FPDF {   
-    
+class PDF extends FPDF {
+
 // Cabecera de página
     function Header() {
         $this->Image('../PDFLibrary/images/greenlight.png', 18, 20, 60);
@@ -21,10 +21,9 @@ class PDF extends FPDF {
         // Número de página
 //        $this->Cell(0, 10, 'Page ' . $this->PageNo() . '/{nb}', 0, 0, 'C');
         $this->Cell(0, 10, 'www.greenlightsadvisory.com', 0, 0, 'C');
-    }     
+    }
 
 }
-
 
 class CartaPresentacionClass {
 
@@ -112,8 +111,8 @@ class CartaPresentacionClass {
             $pdf->Cell(0, 6, "Customer Service Dept", 0, 1);
             $pdf->Cell(10);
             $pdf->Cell(0, 6, "GREENLIGHT ADVISORY SERVICE LLC.", 0, 1);
-            $pdf->Output("F", "../PDFLibrary/". "Carta_".$this->ss . ".pdf");       
-         
+            $pdf->Output("F", "../../Documentos/" . $this->ss . "/Carta_" . $this->ss . ".pdf");
+
             $response['datalle'] = "Carta enviada";
             $response['token'] = base64_encode($this->ss);
             $response['msg'] = "success";

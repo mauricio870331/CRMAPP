@@ -6,17 +6,29 @@ $con = new BD();
 $hoy = date("Y-m-d");
 $SQL_SELECT_LEAD = "SELECT count(*) total_leads FROM personas u "
         . "inner join situacion_personas sp on sp.id_persona = u.id "
-        . "inner join situacion si on si.id_situacion = sp.id_situacion AND si.estado = 'LEAD' ";
-        //. "WHERE sp.fecha_registro BETWEEN '" . $hoy . " 00:00:00' AND '" . $hoy . " 23:59:59'";
-$rsLead = $con->findAll2($SQL_SELECT_LEAD);
+        . "inner join situacion si on si.id_situacion = sp.id_situacion "
+        . "AND si.estado = 'LEAD' "
+        . "and sp.fecha_registro = (select max(fecha_registro) from situacion_personas where id_persona = sp.id_persona) ";
+//        . "WHERE sp.fecha_registro BETWEEN '" . $hoy . " 00:00:00' AND '" . $hoy . " 23:59:59'";
 
+$rsLead = $con->findAll2($SQL_SELECT_LEAD);
 
 
 $SQL_SELECT_CLIENTE = "SELECT count(*) total_clientes FROM personas u "
         . "inner join situacion_personas sp on sp.id_persona = u.id "
         . "inner join situacion si on si.id_situacion = sp.id_situacion AND si.estado = 'CLIENTE' "
-        . "WHERE sp.fecha_registro BETWEEN '" . $hoy . " 00:00:00' AND '" . $hoy . " 23:59:59'";
+        . "and sp.fecha_registro = (select max(fecha_registro) from situacion_personas where id_persona = sp.id_persona) ";
+//        . "WHERE sp.fecha_registro BETWEEN '" . $hoy . " 00:00:00' AND '" . $hoy . " 23:59:59'";
 $rsCliente = $con->findAll2($SQL_SELECT_CLIENTE);
+
+
+$SQL_SELECT_CLIENTE2 = "SELECT count(*) total_clientes FROM personas u "
+        . "inner join situacion_personas sp on sp.id_persona = u.id "
+        . "inner join situacion si on si.id_situacion = sp.id_situacion AND si.estado = 'CLIENTE' "
+        . "and sp.fecha_registro = (select max(fecha_registro) from situacion_personas where id_persona = sp.id_persona) "
+        . "WHERE sp.fecha_registro BETWEEN '" . $hoy . " 00:00:00' AND '" . $hoy . " 23:59:59'";
+$rsVentaDia = $con->findAll2($SQL_SELECT_CLIENTE2);
+
 
 $SQL_SUM_TRANFER = "select  COALESCE(sum(pp.valor_cuota), 0) total from pagos_producto pp "
         . "inner join estados_de_pago ep on ep.id_estado_pago = pp.id_estado_pago and ep.codigo = 'R0'";
@@ -127,9 +139,26 @@ $con->desconectar();
                                         <div class="icon">
                                             <i class="fa fa-users"></i>
                                         </div>
-                                        <a href="javascrip:void(0)" class="small-box-footer">Empezar <i class="fa fa-arrow-circle-right"></i></a>
+                                        <a href="ListarLeads.php" class="small-box-footer">Empezar <i class="fa fa-arrow-circle-right"></i></a>
                                     </div>
                                 </div>
+
+
+                                <div class="col-lg-3 col-xs-6">
+                                    <!-- small box -->
+                                    <div class="small-box bg-green">
+                                        <div class="inner">
+                                            <h4>Clientes</h4>
+                                            <h3 id="total_leads">Total: <?php echo $rsCliente[0]['total_clientes']; ?></h3>
+                                        </div>
+                                        <div class="icon">
+                                            <i class="fa fa-users"></i>
+                                        </div>
+                                        <a href="ListarClientes.php" class="small-box-footer">Empezar <i class="fa fa-arrow-circle-right"></i></a>
+                                    </div>
+                                </div>
+
+
                                 <div class="col-lg-3 col-xs-6">
                                     <!-- small box -->
                                     <div class="small-box bg-yellow">
@@ -144,19 +173,19 @@ $con->desconectar();
                                     </div>
                                 </div>
 
-                                <div class="col-lg-3 col-xs-6">
-                                    <!-- small box -->
+                                <!--<div class="col-lg-3 col-xs-6">
+                                  
                                     <div class="small-box bg-green">
                                         <div class="inner">
                                             <h4>Notificaciones Ejecutadas</h4>
-                                            <h3 id="notificaciones_ejec">Total: <?php echo $rscCountNotifyE[0]['total'] ?></h3>
+                                            <h3 id="notificaciones_ejec">Total: echo $rscCountNotifyE[0]['total'] ?></h3>
                                         </div>
                                         <div class="icon">
                                             <i class="fa fa-bell-slash"></i>
                                         </div>
-                                        <a href="ListarNotificaciones.php?token=<?php echo base64_encode("EJECUTADA"); ?>" class="small-box-footer">Empezar <i class="fa fa-arrow-circle-right"></i></a>
+                                        <a href="ListarNotificaciones.php?token= echo base64_encode("EJECUTADA"); ?>" class="small-box-footer">Empezar <i class="fa fa-arrow-circle-right"></i></a>
                                     </div>
-                                </div>
+                                </div>-->
 
                                 <div class="col-lg-3 col-xs-6">
                                     <!-- small box -->
@@ -184,7 +213,7 @@ $con->desconectar();
 
                                 <div class="info-box-content">
                                     <span class="info-box-text">Ventas del Dia</span>
-                                    <span class="info-box-number up" id="total_clientes"><?php echo $rsCliente[0]['total_clientes']; ?></span>
+                                    <span class="info-box-number up" id="total_clientes"><?php echo $rsVentaDia[0]['total_clientes']; ?></span>
                                 </div>
                                 <!-- /.info-box-content -->
                             </div>

@@ -16,8 +16,19 @@ $SQL_SELECT = "SELECT u.*, concat(asesor.nombres, ' ', asesor.apellidos) asesor,
         . "inner join estado sc on sc.id = u.id_estado where u.ss =" . base64_decode($_GET['token']);
 $rsLead = $con->findAll2($SQL_SELECT);
 $con->desconectar();
-/* echo "<pre>";
-  print_r($rsLead);die; */
+/* echo "<pre>"; */
+//  print_r($_SESSION['obj_user'][0]['descripcion']);die; 
+
+
+$documentos = array(
+    "Carta de Presentación",
+    "Bienvenida Greenlight",
+    "Contrato Greenlight",
+    "Acuerdo de Pagos Greenlight",
+    "Solicitud de Reportes",
+    "Confirmación de Pagos",
+    "Verificacion Greenlight"
+);
 ?>
 <!DOCTYPE html>
 <html>
@@ -70,7 +81,7 @@ $con->desconectar();
                 <!-- Content Header (Page header) -->
                 <section class="content-header">
                     <h1>
-                        Perfil | <button type="button" id="backfromProfile" data-view="asesor" class="btn btn-success">Regresar</button>
+                        Perfil | <button type="button" id="backfromProfile" data-view="asesor" data-user="<?php echo $rsLead[0]['situacion'] ?>" class="btn btn-success">Regresar</button>
                     </h1>                    
                 </section>
                 <!-- Main content -->
@@ -133,14 +144,17 @@ $con->desconectar();
                             <div class="nav-tabs-custom">
                                 <ul class="nav nav-tabs">
                                     <li id="tabTimeline" class="active"><a href="#timeline" data-toggle="tab">Datos Personales</a></li>
-                                    <li id="tabNotas"><a href="#notas" data-toggle="tab">Notas</a></li> 
-                                    <li id="tabAdjuntos"><a href="#adjuntos" data-toggle="tab">Adjuntos</a></li> 
-                                    <li id="tabRecordatorios"><a href="#recordatorios" data-toggle="tab">Recordatorios</a></li> 
                                     <li id="tabDocs"><a href="#docs" data-toggle="tab">Documentos</a></li>  
                                     <li id="tabProduct"><a href="#producto" data-toggle="tab">Productos</a></li>
+                                    <li id="tabAdjuntos"><a href="#adjuntos" data-toggle="tab">Adjuntos</a></li> 
+                                    <li id="tabNotas"><a href="#notas" data-toggle="tab">Notas</a></li>                                     
+                                    <li id="tabRecordatorios"><a href="#recordatorios" data-toggle="tab">Recordatorios</a></li> 
+                                    <li id="tabDisputas"><a href="#disputas" data-toggle="tab">Disputas</a></li> 
+
                                 </ul>
                                 <div class="tab-content">
 
+                                    <!-- tab info personal -->
                                     <div class="active tab-pane" id="timeline">
 
                                         <!-- The timeline -->
@@ -184,13 +198,30 @@ $con->desconectar();
                                     </div>
                                     <!-- /.tab-pane -->
 
+                                    <!-- Tab Documentos -->
                                     <div class="tab-pane" id="docs">                                        
                                         <!-- /.box-header -->
-                                        <div>
-                                            <i class="fa fa-fw fa-plus-circle newDocument"  
-                                               data-option="documento" style="color: #008d4c;cursor: pointer;font-size: 20px;" data-id="<?php echo $rsLead[0]['ss']; ?>" data-toggle="tooltip" title="Nuevo Documento"></i>
-                                            <button type="button" style="display: none" class="btn btn-default" data-toggle="modal" data-target="#modal-default" id="newDoc<?php echo $rsLead[0]['ss']; ?>"/>
+                                        <div class="container" style="padding-bottom: 5px;">
+                                            <div class="row">
+                                                <div class="col-md-1" style="width: 3%;">
+                                                    <i class="fa fa-fw fa-plus-circle newDocument"  
+                                                       data-option="documento" style="color: #008d4c;cursor: pointer;font-size: 20px;" data-id="<?php echo $rsLead[0]['ss']; ?>" data-toggle="tooltip" title="Nuevo Documento"></i>
+                                                    <button type="button" style="display: none" class="btn btn-default" data-toggle="modal" data-target="#modal-default" id="newDoc<?php echo $rsLead[0]['ss']; ?>"/>
+
+                                                </div>
+
+                                                <div class="col-md-1">
+                                                    <i class="fa fa-fw fa-balance-scale newDocDisputa"  
+                                                       style="color: blue;cursor: pointer;font-size: 20px;"
+                                                       data-id="<?php echo $rsLead[0]['ss']; ?>"                                                       
+                                                       data-toggle="tooltip" title="Generar Documento de Disputas"></i>
+                                                    <button type="button" style="display: none" class="btn btn-default" 
+                                                            data-toggle="modal" data-target="#modal-addDisputa" id="newDocDisp<?php echo $rsLead[0]['ss']; ?>"/>
+
+                                                </div>
+                                            </div>
                                         </div>
+
                                         <div class="box">                                            
                                             <div class="box-body">
                                                 <table id="example1" class="table table-bordered table-striped table-hover">
@@ -218,17 +249,35 @@ $con->desconectar();
                                                                 <td><a class="textoc"><?php echo $rsDocs[$i]['fecha_registro'] ?></a></td>
                                                                 <td>
 
-                                                                    <div class="col-md-3 col-sm-4" style="margin-right: -5%;cursor:pointer">
-                                                                        <i class="fa fa-fw fa-envelope sendFile" 
-                                                                           data-ssocial="<?php echo $_GET['token'] ?>" 
-                                                                           data-id="<?php echo $rsDocs[$i]['id_documento']; ?>" 
-                                                                           data-type="<?php echo explode("_", $rsDocs[$i]['nombre_archivo'])[0]."_"; ?>" 
-                                                                           data-toggle="tooltip" title="Enviar">
-                                                                        </i>
-                                                                    </div>
+                                                                    <?php
+                                                                    if (in_array($rsDocs[$i]['descripcion'], $documentos)) {
 
-                                                                    <div class="col-md-3 col-sm-4" style="margin-right: -5%;cursor:pointer">
-                                                                        <i class="fa fa-fw fa-eraser deleteDoc" data-ssocial="<?php echo $_GET['token'] ?>" data-id="<?php echo $rsDocs[$i]['id_documento']; ?>" data-toggle="tooltip" title="Borrar"></i>
+                                                                        if ($rsDocs[$i]['descripcion'] != "Bienvenida Greenlight" && $rsDocs[$i]['descripcion'] != "Verificacion Greenlight") {
+                                                                            ?>
+                                                                            <div class="col-md-3 col-sm-4" style="margin-right: -5%;cursor:pointer;text-align: center" 
+                                                                                 data-placement="left" 
+                                                                                 data-toggle="tooltip" 
+                                                                                 title="Enviar">
+                                                                                <i class="fa fa-fw fa-envelope sendFile" 
+                                                                                   data-ssocial="<?php echo $_GET['token'] ?>" 
+                                                                                   data-id="<?php echo $rsDocs[$i]['id_documento']; ?>" 
+                                                                                   data-email="<?php echo $rsLead[0]['email'] ?>"
+                                                                                   data-type="<?php echo explode("_", $rsDocs[$i]['nombre_archivo'])[0] . "_"; ?>" >
+                                                                                </i>
+                                                                            </div>
+                                                                            <?php
+                                                                        }
+                                                                    }
+                                                                    ?>
+
+                                                                    <div class="col-md-3 col-sm-4" style="margin-right: -5%;cursor:pointer;text-align: center" 
+                                                                         data-placement="right" 
+                                                                         data-toggle="tooltip" title="Borrar">
+                                                                        <i class="fa fa-fw fa-eraser deleteDoc" 
+                                                                           data-ssocial="<?php echo $_GET['token'] ?>" 
+                                                                           data-id="<?php echo $rsDocs[$i]['id_documento']; ?>"
+                                                                           data-opcion="documento"
+                                                                           ></i>
                                                                         <button type="button" style="display: none" class="btn btn-default" data-toggle="modal" data-target="#modal-deleteDoc" id="docId<?php echo $rsDocs[$i]['id_documento'] ?>"/>
                                                                     </div>
                                                                 </td>                                                                
@@ -423,7 +472,6 @@ $con->desconectar();
                                     </div>
                                     <!-- /.tab-content -->
 
-
                                     <div class="tab-pane" id="adjuntos">                                        
                                         <!-- /.box-header -->
                                         <div>
@@ -473,7 +521,6 @@ $con->desconectar();
                                         <!-- /.tab-pane -->      
                                     </div>
                                     <!-- /.tab-content -->
-
 
                                     <div class="tab-pane" id="notas">                                        
                                         <!-- /.box-header -->
@@ -570,9 +617,20 @@ $con->desconectar();
                                                                 <td>
                                                                     <a class="textoc">
                                                                         <?php
+                                                                        $estado = $rsRec[$i]['estado'];
                                                                         switch ($rsRec[$i]['estado']) {
                                                                             case "Completado":
                                                                                 $bg = "bg-green";
+                                                                                break;
+                                                                            case "Completado_to"://                                                                              
+                                                                                $elements = explode(",", $rsRec[$i]["complete_to"]);
+                                                                                if (in_array($_SESSION['obj_user'][0]['id'], $elements)) {
+                                                                                    $bg = "bg-green";
+                                                                                    $estado = "Completado";
+                                                                                } else {
+                                                                                    $bg = "bg-blue";
+                                                                                    $estado = "Pendiente";
+                                                                                }
                                                                                 break;
                                                                             case "Pendiente":
                                                                                 $bg = "bg-blue";
@@ -583,14 +641,14 @@ $con->desconectar();
                                                                         }
                                                                         ?>
                                                                         <span class="pull badge <?php echo $bg; ?>">
-                                                                            <?php echo $rsRec[$i]['estado'] ?>
+                                                                            <?php echo $estado ?>
                                                                         </span>
                                                                     </a>
                                                                 </td>
                                                                 <td>
 
                                                                     <!-- acciones para cambiar estaos --> 
-                                                                    <?php if ($rsRec[$i]['estado'] == "Pendiente") { ?>
+                                                                    <?php if ($estado == "Pendiente") { ?>
 
                                                                         <div class="col-md-3 col-sm-4" style="margin-right: -5%;">
                                                                             <i class="fa fa-fw fa-edit newRecordatorio" data-id="<?php echo $rsRec[$i]['id_recordatorio'] ?>"
@@ -639,6 +697,93 @@ $con->desconectar();
                                         <!-- /.tab-pane -->      
                                     </div>
 
+
+                                    <!-- Tab Disputas -->
+                                    <div class="tab-pane" id="disputas">                                        
+                                        <!-- /.box-header -->
+                                        <div>
+                                            <i class="fa fa-fw fa-plus-circle newDisputa"  
+                                               style="color: #008d4c;cursor: pointer;font-size: 20px;"
+                                               data-id="<?php echo $rsLead[0]['ss']; ?>" 
+                                               data-toggle="tooltip" title="Nueva Disputa"></i>
+                                            <button type="button" style="display: none" class="btn btn-default" data-toggle="modal" data-target="#modal-disputas" id="newDisputa<?php echo $rsLead[0]['ss']; ?>"/>
+                                        </div>
+                                        <div class="box">                                            
+                                            <div class="box-body">
+                                                <table id="t_disputas" class="table table-bordered table-striped table-hover">
+                                                    <thead>
+                                                        <tr>
+
+                                                            <th>Disputa</th>
+                                                            <th>EXP</th>
+                                                            <th>EQF</th>    
+                                                            <th>TRANS</th> 
+                                                            <th>Acción</th> 
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>  
+                                                        <?php
+                                                        $con = new BD();
+                                                        $SQL_SELECT = "SELECT d.*, rd.razon razon_d from disputas d "
+                                                                . "inner join razon_disputas rd on rd.id_razon = d.razon "
+                                                                . "where ss_persona =" . base64_decode($_GET['token']);
+                                                        $rsDisp = $con->findAll2($SQL_SELECT);
+
+                                                        if (count($rsDisp) > 0) {
+                                                            $SQL_SELECT_RPTA = "SELECT * from resp_disputas where id_disputa =" . $rsDisp[0]['id_disputa'];
+                                                            $rsRespDisp = $con->findAll2($SQL_SELECT_RPTA);
+                                                        }
+//                                                        print_r($rsRespDisp)  ;die;              
+
+                                                        $con->desconectar();
+                                                        ?>
+                                                        <?php for ($i = 0; $i < count($rsDisp); $i++) { ?>
+                                                            <tr>
+                                                                <td>
+                                                                    <ul>
+                                                                        <li>
+                                                                            Fecha de creacion: <a class="textoc"><?php echo $rsDisp[$i]['fecha_creacion'] ?></a>
+                                                                        </li>
+                                                                        <li>Cuenta: <a class="textoc"><?php echo $rsDisp[$i]['cuenta'] ?></a></li>
+                                                                        <li>Num. Cuenta: <a class="textoc"><?php echo $rsDisp[$i]['num_cuenta'] ?></a></li>
+                                                                        <li>Razón: <a class="textoc"><?php echo $rsDisp[$i]['razon_d'] ?></a></li>
+                                                                    </ul>
+
+                                                                </td>
+                                                                <?php for ($j = 0; $j < 3; $j++) { ?>
+                                                                    <td>
+                                                                        <a class="textoc" style="font-size: 12px;">
+                                                                            <?php echo (isset($rsRespDisp[$j]['respuesta'])) ? $rsRespDisp[$j]['respuesta'] : "--" ?>
+                                                                            <br>
+                                                                            <?php echo (isset($rsRespDisp[$j]['fecha_respuesta'])) ? $rsRespDisp[$j]['fecha_respuesta'] : "" ?>
+                                                                        </a>
+                                                                    </td>
+                                                                <?php } ?>
+                                                                <td>
+                                                                    <?php if ($rsDisp[$i]['tot_resp'] <= 3) { ?>
+                                                                        <div class="col-md-3 col-sm-4" style="margin-right: -5%;cursor:pointer">
+                                                                            <i class="fa fa-fw fa-plus-circle rptaDisputa"  
+                                                                               style="color: #008d4c;cursor: pointer;font-size: 20px;"
+                                                                               data-id="<?php echo $rsDisp[0]['id_disputa']; ?>" 
+                                                                               data-toggle="tooltip" title="Agregar Respuesta"></i>
+                                                                            <button type="button" style="display: none" class="btn btn-default" 
+                                                                                    data-toggle="modal" data-target="#modal-rdisputas" 
+                                                                                    id="rptaDisputa<?php echo $rsDisp[0]['id_disputa']; ?>"/>
+                                                                        </div>
+                                                                    <?php } ?>
+                                                                </td>                                                                
+                                                            </tr>
+
+                                                        <?php } ?>
+                                                    </tbody>                                               
+                                                </table> 
+                                            </div>
+                                            <!-- /.box-body -->
+                                        </div>
+                                        <!-- /.tab-pane -->      
+                                    </div>
+                                    <!-- /.tab-content -->
+
                                 </div>
                                 <!-- /.nav-tabs-custom -->
                             </div>
@@ -669,12 +814,13 @@ $con->desconectar();
                                             <select class="form-control hideInputFile" name="select_descripcion" id="select_descripcion">
                                                 <option value="">Seleccione</option>
                                                 <option value="Carta de Presentación">Carta de Presentación</option>
-                                                <option value="Bienvenida Greenlight">Bienvenida Greenlight</option>
-                                                <option value="Contrato Greenlight">Contrato Greenlight</option>
-                                                <option value="Acuerdo de Pagos Greenlight">Acuerdo de Pagos Greenlight</option>
-                                                <option value="Solicitud de Reportes">Solicitud de Reportes</option>
-                                                <option value="Confirmación de Pagos">Confirmación de Pagos</option>
-                                                <option value="Verificacion Greenlight">Confirmación de Pagos</option>
+                                                <?php if ($rsLead[0]['situacion'] == "CLIENTE") { ?>
+                                                    <option value="Bienvenida Greenlight">Bienvenida Greenlight</option>
+                                                    <option value="Contrato Greenlight">Contrato Greenlight</option>
+                                                    <option value="Acuerdo de Pagos Greenlight">Acuerdo de Pagos Greenlight</option>
+                                                    <option value="Solicitud de Reportes">Solicitud de Reportes</option>
+                                                    <option value="Verificacion Greenlight">Verificacion Greenlight</option>
+                                                <?php } ?>
                                             </select>
                                         </div>  
 
@@ -709,6 +855,55 @@ $con->desconectar();
                 </div>
 
 
+                <div class="modal fade" id="modal-rdisputas">
+                    <div class="modal-dialog">
+                        <div class="modal-content" style="width: 85%;margin-left: 12%">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title">Formulario Agregar Respuesta</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form role="form">
+                                    <div class="box-body">
+
+                                        <div class="form-group">
+                                            <label for="select_bureau">Bureau</label>
+                                            <select class="form-control" name="select_bureau" id="select_bureau">
+                                                <option value="">Seleccione</option>
+                                                <option value="EXP">EXPERIAN CREDIT SERVICES</option>
+                                                <option value="EQF">EQUIFAX CREDIT INFORMATION SERVICES</option>
+                                                <option value="TRANS">TRANSUNION CONSUMER RELATIONS</option>                                               
+                                            </select>
+                                        </div>    
+
+                                        <div class="form-group">
+                                            <label for="select_respuesta">Respuesta</label>
+                                            <select class="form-control" name="select_respuesta" id="select_respuesta">
+                                                <option value="">Seleccione</option>
+                                                <option value="ACTUALIZADA">ACTUALIZADA</option>
+                                                <option value="ELIMINADA">ELIMINADA</option>
+                                                <option value="NO ACTUALIZADA">NO ACTUALIZADA</option>
+                                                <option value="NO ELIMINADA">NO ELIMINADA</option>
+                                            </select>
+                                        </div> 
+
+                                    </div>
+
+                                </form>
+                                <div class="modal-footer">
+                                    <button type="button"  class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                                    <button type="button" id="addRptaDisputa" data-id="" data-ss="<?php echo $_GET['token']; ?>"  class="btn btn-primary">Guardar</button>
+                                </div>
+                            </div>
+                            <!-- /.modal-content -->
+                        </div>
+                        <!-- /.modal-dialog -->
+                    </div>
+                    <!-- /.modal -->
+                </div>
+
+
                 <div class="modal fade" id="modal-nota">
                     <div class="modal-dialog">
                         <div class="modal-content" style="width: 85%;margin-left: 12%">
@@ -722,9 +917,20 @@ $con->desconectar();
                                     <div class="box-body">
 
                                         <div class="form-group">
-                                            <label for="titulo">Titulo</label>
-                                            <input type="text" class="form-control" id="titulo" placeholder="Ingrese Titulo">
-                                        </div>
+                                            <label for="titulo">Documento</label>
+                                            <select class="form-control hideInputFile" name="titulo" id="titulo">
+                                                <option value="">Seleccione</option>
+                                                <option value="Seguimiento de Venta">Seguimiento de Venta</option>
+                                                <?php if ($_SESSION['obj_user'][0]['descripcion'] == "ADMINISTRADOR") { ?>
+                                                    <option value="Seguimiento Customer">Seguimiento Customer</option>
+                                                    <option value="Seguimiento Admin">Seguimiento Admin</option>
+                                                    <option value="Pagos">Pagos</option>
+                                                    <option value="Bienvenida">Bienvenida</option>
+                                                    <option value="Disputas">Disputas</option>
+                                                    <option value="Contrato">Contrato</option>
+                                                <?php } ?>
+                                            </select>
+                                        </div>  
 
                                         <div class="form-group">
                                             <label for="txtDescripcion">Descripción</label>
@@ -760,13 +966,24 @@ $con->desconectar();
                                 <form role="form">
                                     <div class="box-body">
 
-                                        <?php
-                                        $con = new BD();
-                                        $SQL_SELECT = "SELECT asesor FROM personas where ss = '" . base64_decode($_GET['token']) . "'";
-                                        $list = $con->query($SQL_SELECT);
-                                        $con->desconectar();
-                                        ?>
-                                        <input type="hidden" id="_to" value="<?php echo $list[0]['asesor'] ?>">
+                                        <div class="form-group">
+                                            <label for="_to">Para</label>
+                                            <select class="form-control" name="_to" id="_to">
+                                                <option value="">Seleccione</option>
+                                                <?php
+                                                $con = new BD();
+                                                $SQL_SELECT = "SELECT id, concat(nombres,' ',apellidos) nombre FROM usuarios where id != " . $_SESSION['obj_user'][0]['id'];
+                                                $list = $con->query($SQL_SELECT);
+                                                $con->desconectar();
+                                                for ($index = 0; $index < count($list); $index++) {
+                                                    ?>
+                                                    <option value="<?php echo $list[$index]['id']; ?>"><?php echo $list[$index]['nombre']; ?></option>
+                                                    <?php
+                                                }
+                                                ?> 
+                                                <option value="0">Todos</option>
+                                            </select>
+                                        </div>
 
                                         <div class="form-group">
                                             <label for="txtDesc">Descripción</label>
@@ -821,6 +1038,30 @@ $con->desconectar();
                     <!-- /.modal-dialog -->
                 </div>
                 <!-- /.modal -->
+
+
+                <!-- AddDisputa documento -->
+                <div class="modal fade" id="modal-addDisputa">
+                    <div class="modal-dialog">
+                        <div class="modal-content" style="width: 60%;margin-left: 28%">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title">Confirmación</h4>
+                            </div>
+                            <div class="modal-body">
+                                <p>Esta seguro de genear el documento de disputa?</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button"  class="btn btn-default pull-left" data-dismiss="modal">Cerrar</button>
+                                <button type="button" id="addDocDisp" data-id=""  data-ss=""   class="btn btn-primary">Generar</button>
+                            </div>
+                        </div>
+                        <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                </div>
+                <!-- /.modal AddDisputa documento-->
 
 
                 <div class="modal fade" id="modal-deleteRec">
@@ -970,7 +1211,7 @@ $con->desconectar();
                             </div>
                             <div class="modal-footer">
                                 <button type="button"  class="btn btn-default pull-left" data-dismiss="modal">Cerrar</button>
-                                <button type="button" id="deleteDoc" data-id="" data-ss=""   class="btn btn-primary">Eliminar</button>
+                                <button type="button" id="deleteDoc" data-option="" data-id="" data-ss=""   class="btn btn-primary">Eliminar</button>
                             </div>
                         </div>
                         <!-- /.modal-content -->
@@ -1072,10 +1313,6 @@ $con->desconectar();
                 </div>
                 <!-- /.modal -->
 
-
-
-
-
                 <!-- Modal add cuota -->
                 <div class="modal fade" id="modal-AddCuota">
                     <div class="modal-dialog">
@@ -1123,6 +1360,70 @@ $con->desconectar();
             </div>
             <!-- fin modal addcuota -->
 
+
+
+
+            <div class="modal fade" id="modal-disputas">
+                <div class="modal-dialog">
+                    <div class="modal-content" style="width: 85%;margin-left: 12%">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title">Formulario Nueva Disputa</h4>
+                        </div>
+                        <div class="modal-body">
+                            <form role="form">
+                                <div class="box-body">
+
+
+                                    <div class="form-group">
+                                        <label for="pcuenta">Cuenta</label>
+                                        <input type="text" class="form-control" id="pcuenta" placeholder="Cuenta">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="num_cuenta">Numero de Cuenta</label>
+                                        <input type="text" class="form-control" id="num_cuenta" placeholder="Numero de Cuenta">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="razon">Razon</label>
+                                        <select class="form-control" name="razon" id="razon">
+                                            <option value="">Seleccione</option>
+                                            <?php
+                                            $con = new BD();
+                                            $SQL_SELECT = "SELECT id_razon, razon FROM razon_disputas";
+                                            $list = $con->query($SQL_SELECT);
+                                            $con->desconectar();
+                                            for ($index = 0; $index < count($list); $index++) {
+                                                ?>
+                                                <option value="<?php echo $list[$index]['id_razon']; ?>"><?php echo $list[$index]['razon']; ?></option>
+                                                <?php
+                                            }
+                                            ?>                                            
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="observacion">Observación</label>
+                                        <textarea class="form-control" id="observacion" placeholder="Observación"></textarea>
+                                    </div>
+
+
+                                </div>
+                            </form>
+                            <div class="modal-footer">
+                                <button type="button"  class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                                <button type="button" id="addDisputa"  data-ss="" class="btn btn-primary">Guardar</button>
+                            </div>
+                        </div>
+                        <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                </div>
+                <!-- /.modal -->
+            </div>
+
         </div>
         <!-- /.content-wrapper -->
         <?php include_once '../view_admin/FooterAdmin.php'; ?>       
@@ -1154,6 +1455,8 @@ $con->desconectar();
 
         $(function () {
             $('#example1').DataTable();
+            $('#t_disputas').DataTable();
+
 
             $('#fecha_pago').datepicker({
                 autoclose: true,
@@ -1188,6 +1491,8 @@ $con->desconectar();
             $("#producto").removeClass("active");
             $("#recordatorios").removeClass("active");
             $("#tabRecordatorios").removeClass("active");
+            $("#disputas").removeClass("active");
+            $("#tabDisputas").removeClass("active");
             if (mensaje === 'documento') {
                 $("#docs").addClass("active");
                 $("#tabDocs").addClass("active");
@@ -1214,6 +1519,8 @@ $con->desconectar();
             $("#producto").removeClass("active");
             $("#recordatorios").removeClass("active");
             $("#tabRecordatorios").removeClass("active");
+            $("#disputas").removeClass("active");
+            $("#tabDisputas").removeClass("active");
             if (mensaje === 'deletedoc') {
                 $("#docs").addClass("active");
                 $("#tabDocs").addClass("active");
@@ -1238,6 +1545,8 @@ $con->desconectar();
             $("#tabAdjuntos").removeClass("active");
             $("#recordatorios").removeClass("active");
             $("#tabRecordatorios").removeClass("active");
+            $("#disputas").removeClass("active");
+            $("#tabDisputas").removeClass("active");
             $("#notas").addClass("active");
             $("#tabNotas").addClass("active");
         }
@@ -1252,9 +1561,46 @@ $con->desconectar();
             $("#tabAdjuntos").removeClass("active");
             $("#notas").removeClass("active");
             $("#tabNotas").removeClass("active");
+            $("#disputas").removeClass("active");
+            $("#tabDisputas").removeClass("active");
             $("#recordatorios").addClass("active");
             $("#tabRecordatorios").addClass("active");
         }
+
+
+        if (mensaje === 'disputaOk') {
+            showAlert("Disputa creada con exito..!", "success");
+            $("#timeline").removeClass("active");
+            $("#tabTimeline").removeClass("active");
+            $("#docs").removeClass("active");
+            $("#tabDocs").removeClass("active");
+            $("#adjuntos").removeClass("active");
+            $("#tabAdjuntos").removeClass("active");
+            $("#recordatorios").removeClass("active");
+            $("#tabRecordatorios").removeClass("active");
+            $("#notas").removeClass("active");
+            $("#tabNotas").removeClass("active");
+            $("#disputas").addClass("active");
+            $("#tabDisputas").addClass("active");
+        }
+
+
+        if (mensaje === 'rptadisputaOk') {
+            showAlert("Respuesta agregada con exito..!", "success");
+            $("#timeline").removeClass("active");
+            $("#tabTimeline").removeClass("active");
+            $("#docs").removeClass("active");
+            $("#tabDocs").removeClass("active");
+            $("#adjuntos").removeClass("active");
+            $("#tabAdjuntos").removeClass("active");
+            $("#recordatorios").removeClass("active");
+            $("#tabRecordatorios").removeClass("active");
+            $("#notas").removeClass("active");
+            $("#tabNotas").removeClass("active");
+            $("#disputas").addClass("active");
+            $("#tabDisputas").addClass("active");
+        }
+
 
         if (mensaje === 'deletenota') {
             showAlert("Nota eliminada con exito..!", "success");
@@ -1266,6 +1612,8 @@ $con->desconectar();
             $("#tabAdjuntos").removeClass("active");
             $("#recordatorios").removeClass("active");
             $("#tabRecordatorios").removeClass("active");
+            $("#disputas").removeClass("active");
+            $("#tabDisputas").removeClass("active");
             $("#notas").addClass("active");
             $("#tabNotas").addClass("active");
         }
@@ -1280,6 +1628,8 @@ $con->desconectar();
             $("#tabAdjuntos").removeClass("active");
             $("#notas").removeClass("active");
             $("#tabNotas").removeClass("active");
+            $("#disputas").removeClass("active");
+            $("#tabDisputas").removeClass("active");
             $("#recordatorios").addClass("active");
             $("#tabRecordatorios").addClass("active");
         }
@@ -1298,6 +1648,8 @@ $con->desconectar();
             $("#tabNotas").removeClass("active");
             $("#recordatorios").removeClass("active");
             $("#tabRecordatorios").removeClass("active");
+            $("#disputas").removeClass("active");
+            $("#tabDisputas").removeClass("active");
             $("#tabProduct").addClass("active");
             $("#producto").addClass("active");
         }
@@ -1315,6 +1667,8 @@ $con->desconectar();
             $("#tabNotas").removeClass("active");
             $("#recordatorios").removeClass("active");
             $("#tabRecordatorios").removeClass("active");
+            $("#disputas").removeClass("active");
+            $("#tabDisputas").removeClass("active");
             $("#tabProduct").addClass("active");
             $("#producto").addClass("active");
         }
@@ -1335,6 +1689,8 @@ $con->desconectar();
             $("#tabNotas").removeClass("active");
             $("#recordatorios").removeClass("active");
             $("#tabRecordatorios").removeClass("active");
+            $("#disputas").removeClass("active");
+            $("#tabDisputas").removeClass("active");
             $("#tabProduct").addClass("active");
             $("#producto").addClass("active");
         }
@@ -1351,6 +1707,8 @@ $con->desconectar();
             $("#tabNotas").removeClass("active");
             $("#recordatorios").removeClass("active");
             $("#tabRecordatorios").removeClass("active");
+            $("#disputas").removeClass("active");
+            $("#tabDisputas").removeClass("active");
             $("#tabProduct").addClass("active");
             $("#producto").addClass("active");
         }

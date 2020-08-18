@@ -27,7 +27,7 @@
                 </a>
                 <ul class="treeview-menu">
                     <li><a href="ListarLeads.php"><i class="fa fa-circle-o"></i> Listar Leads</a></li>
-                    <li><a href="ListarLeads.php"><i class="fa fa-circle-o"></i> Listar Clientes</a></li>
+                    <li><a href="ListarClientes.php"><i class="fa fa-circle-o"></i> Listar Clientes</a></li>
                     <li><a href="CrearLeads.php"><i class="fa fa-circle-o"></i> Crear Lead</a></li>                     
                 </ul>
             </li>

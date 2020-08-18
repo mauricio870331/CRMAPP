@@ -119,7 +119,7 @@ class BienvenidaClass {
             $pdf->Ln(4);
 
             //F para guardar, I para mostrar
-            $pdf->Output("F", "../PDFLibrary/Bienvenida_" . $this->ss . ".pdf");
+            $pdf->Output("F", "../../Documentos/" . $this->ss . "/Bienvenida_" . $this->ss . ".pdf");
 
             $response['datalle'] = "Carta enviada";
             $response['token'] = base64_encode($this->ss);

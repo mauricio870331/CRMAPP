@@ -25,8 +25,6 @@ class PDF extends FPDF {
 //        $this->Cell(0, 10, 'Page ' . $this->PageNo() . '/{nb}', 0, 0, 'C');
         $this->Cell(0, 10, 'www.greenlightsadvisory.com', 0, 0, 'C');
     }
-    
-    
 
 }
 
@@ -74,26 +72,40 @@ try {
     $pdf->Cell(0, 6, "Customer Service Dept", 0, 1);
     $pdf->Cell(10);
     $pdf->Cell(0, 6, "GREENLIGHT ADVISORY SERVICE LLC.", 0, 1);
-    $pdf->Output("F", $_POST['ss'] . ".pdf");
+    $pdf->Output("F", "../../Documentos/" . $_POST['ss'] . "/Carta_" . $_POST['ss'] . ".pdf");
 
-    $command = "java -jar C:\\\\xampp\\\htdocs\\\CRMAPP\\\Model\\\PDFLibrary\\\dist\\\Mailer.jar " . $_POST['ss'] . "";
+
     $con = new BD();
+
+    $SQL_QUERY = "select * from sender_mail_config order by create_at desc limit 1";
+    $rs = $con->findAll2($SQL_QUERY);
+
+    $type_doc = "Carta_";
+    $command = "java -jar C:\\\\xampp\\\htdocs\\\CRMAPP\\\Model\\\PDFLibrary\\\dist\\\Mailer.jar "
+            . "" . $rs[0]['email_sender'] . " "
+            . "" . $rs[0]['pass'] . " "
+            . "" . $_POST['email'] . " "
+            . "" . $rs[0]['smtp_host'] . " "
+            . "" . $rs[0]['smtp_enable'] . " "
+            . "" . $rs[0]['stmp_port'] . " "
+            . "" . $rs[0]['smtp_auth'] . " "
+            . "" . $type_doc . $_POST['ss'] . " "
+            . "" . $_POST['ss'] . "";
+
     $SQL_INSERT = "INSERT INTO queues (job, exec) "
             . "values ('" . $command . "',0) ";
-    $con->exec($SQL_INSERT);
+    $result = $con->exec($SQL_INSERT);
 
-    /*$SQL_INSERT2 = "INSERT INTO notificacion_personas (documento_persona , cod_notificacion, fecha_envio) "
-            . "values ('" . $_POST['ss'] . "','C_PRESENTACION', NOW()) ";
-    $con->exec($SQL_INSERT2);*/
+    /* $SQL_INSERT2 = "INSERT INTO notificacion_personas (documento_persona , cod_notificacion, fecha_envio) "
+      . "values ('" . $_POST['ss'] . "','C_PRESENTACION', NOW()) ";
+      $con->exec($SQL_INSERT2); */
 
-    $relativaRuta = "../Model/PDFLibrary/";
+    /*$relativaRuta = "../Documentos/" . $_POST['ss'] . "/";
+    $formato = "Carta_" . $_POST['ss'];
     $SQL_INSERT3 = "INSERT INTO  documentos (descripcion,ruta, ext, ss_persona, fecha_registro, nombre_archivo, asesor) "
-            . "VALUES ('Carta de Presentación','" . $relativaRuta . "' ,'pdf', '" . $_POST['ss'] . "', NOW(), '" . $_POST['ss'] . ".pdf', " . $_SESSION['obj_user'][0]['id'] . ")";
+            . "VALUES ('Carta de Presentación','" . $relativaRuta . "' ,'pdf', '" . $_POST['ss'] . "', NOW(), '" . $formato . ".pdf', " . $_SESSION['obj_user'][0]['id'] . ")";
 
-    
-    $con->exec($SQL_INSERT3);
-
-
+    $con->exec($SQL_INSERT3);*/
     $con->desconectar();
     $response['datalle'] = "Carta enviada";
     $response['token'] = base64_encode($_POST['ss']);

@@ -4,14 +4,11 @@ session_start();
 require '../BD.php';
 $con = new BD();
 
-
-
 try {
 
     $SQL_SELECT = "select count(id_producto) total from producto where ss_persona = '" . $_POST['ss'] . "'";
     $rs = $con->findAll2($SQL_SELECT);
     $total_productos = $rs[0]['total'];
-
 
     $SQL_INSERT = "INSERT INTO producto (banco,titular, id_tipo_cuenta, numero_ruta, numero_cuenta, valor, numero_cuotas, ss_persona, fecha_registro, id_tipo_producto) "
             . "VALUES ('" . strtoupper($_POST['banco']) . "','" . strtoupper($_POST['titular']) . "',"
