@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 17-08-2020 a las 20:38:16
+-- Tiempo de generación: 22-08-2020 a las 22:01:45
 -- Versión del servidor: 10.4.13-MariaDB
 -- Versión de PHP: 7.4.7
 
@@ -58,15 +58,16 @@ CREATE TABLE `analisis_persona` (
 
 CREATE TABLE `ciudad` (
   `id` int(11) NOT NULL,
-  `ciudad` varchar(40) NOT NULL
+  `ciudad` varchar(40) NOT NULL,
+  `id_estado` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Volcado de datos para la tabla `ciudad`
 --
 
-INSERT INTO `ciudad` (`id`, `ciudad`) VALUES
-(1, 'New York');
+INSERT INTO `ciudad` (`id`, `ciudad`, `id_estado`) VALUES
+(1, 'New York City', 1);
 
 -- --------------------------------------------------------
 
@@ -90,13 +91,6 @@ CREATE TABLE `disputas` (
   `item` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Volcado de datos para la tabla `disputas`
---
-
-INSERT INTO `disputas` (`id_disputa`, `cuenta`, `num_cuenta`, `razon`, `observacion`, `fecha_creacion`, `creado_por`, `fecha_actualizado`, `actualizado_por`, `ss_persona`, `tot_resp`, `doc_gen`, `item`) VALUES
-(1, 'Prueba Cuenta', '899-956-6451-11', 18, 'Prueba obs.', '2020-08-17 10:08:11', 1, NULL, NULL, '123456789', 2, 1, 1);
-
 -- --------------------------------------------------------
 
 --
@@ -108,25 +102,12 @@ CREATE TABLE `documentos` (
   `descripcion` varchar(100) DEFAULT NULL,
   `ruta` varchar(255) DEFAULT NULL,
   `ext` varchar(10) DEFAULT NULL,
-  `ss_persona` int(11) NOT NULL,
+  `ss_persona` varchar(20) NOT NULL,
   `fecha_registro` datetime NOT NULL,
   `nombre_archivo` varchar(50) NOT NULL,
   `asesor` int(11) DEFAULT NULL,
   `tipo` varchar(20) NOT NULL DEFAULT 'Documento'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Volcado de datos para la tabla `documentos`
---
-
-INSERT INTO `documentos` (`id_documento`, `descripcion`, `ruta`, `ext`, `ss_persona`, `fecha_registro`, `nombre_archivo`, `asesor`, `tipo`) VALUES
-(9, 'Contrato Greenlight', '../Documentos/123456789/', 'pdf', 123456789, '2020-07-17 09:25:14', 'Contrato_123456789.pdf', 1, 'Documento'),
-(10, 'Carta de Presentación', '../Documentos/123456789/', 'pdf', 123456789, '2020-07-17 09:28:07', 'Carta_123456789.pdf', 1, 'Documento'),
-(11, 'Bienvenida Greenlight', '../Documentos/123456789/', 'pdf', 123456789, '2020-07-17 09:29:16', 'Bienvenida_123456789.pdf', 1, 'Documento'),
-(12, 'Acuerdo de Pagos Greenlight', '../Documentos/123456789/', 'pdf', 123456789, '2020-07-17 14:46:01', 'AcuerdoDePagos_123456789.pdf', 1, 'Documento'),
-(13, 'Solicitud de Reportes', '../Documentos/123456789/', 'pdf', 123456789, '2020-07-19 12:00:44', 'SolicitudReporte_123456789.pdf', 1, 'Documento'),
-(18, 'Verificacion Greenlight', '../Documentos/123456789/', 'pdf', 123456789, '2020-07-20 11:26:15', 'Verificacion_123456789.pdf', 1, 'Documento'),
-(25, 'Disputa', '../Documentos/123456789/', 'docx', 123456789, '2020-08-17 10:11:18', 'Disputa1_123456789.docx', 1, 'Documento');
 
 -- --------------------------------------------------------
 
@@ -136,18 +117,15 @@ INSERT INTO `documentos` (`id_documento`, `descripcion`, `ruta`, `ext`, `ss_pers
 
 CREATE TABLE `estado` (
   `id` int(11) NOT NULL,
-  `estado` varchar(50) NOT NULL,
-  `id_ciudad` int(11) NOT NULL
+  `estado` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Volcado de datos para la tabla `estado`
 --
 
-INSERT INTO `estado` (`id`, `estado`, `id_ciudad`) VALUES
-(1, 'Nueva York', 1),
-(2, '13', 123),
-(3, '123', 1231);
+INSERT INTO `estado` (`id`, `estado`) VALUES
+(1, 'New York');
 
 -- --------------------------------------------------------
 
@@ -232,18 +210,38 @@ CREATE TABLE `estados_personas` (
 --
 
 INSERT INTO `estados_personas` (`id_estado`, `id_persona`, `fecha_registro`, `update_by`) VALUES
-(1, 1, '2020-03-19 12:00:50', 3),
-(1, 1, '2020-03-19 14:29:52', 3),
-(1, 1, '2020-03-27 15:14:30', 3),
-(1, 1, '2020-04-16 15:19:34', 3),
-(1, 1, '2020-04-16 15:26:47', 3),
-(1, 1, '2020-05-04 17:51:46', 3),
-(13, 1, '2020-03-19 12:00:37', 3),
-(13, 1, '2020-03-19 12:01:02', 3),
-(13, 1, '2020-03-27 15:14:16', 3),
-(13, 1, '2020-04-16 15:19:30', 3),
-(13, 1, '2020-04-16 15:26:12', 3),
-(13, 1, '2020-05-04 17:51:44', 3);
+(1, 1, '2020-08-17 15:49:08', 3);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `logs_crmapp`
+--
+
+CREATE TABLE `logs_crmapp` (
+  `id_log` int(11) NOT NULL,
+  `code` int(11) NOT NULL,
+  `message_code` varchar(15) NOT NULL,
+  `msn` text NOT NULL,
+  `code_mysql` varchar(11) NOT NULL,
+  `row_count` int(11) NOT NULL,
+  `operacion` varchar(15) NOT NULL,
+  `trace` text NOT NULL,
+  `user_log` int(11) NOT NULL,
+  `date_log` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Volcado de datos para la tabla `logs_crmapp`
+--
+
+INSERT INTO `logs_crmapp` (`id_log`, `code`, `message_code`, `msn`, `code_mysql`, `row_count`, `operacion`, `trace`, `user_log`, `date_log`) VALUES
+(1, 0, 'error', 'SQLSTATE[42S02]: Base table or view not found: 1146 Table \"crm_app.ciudads\" doesn\"t exist', '42S02', 0, 'INSERT', 'W3siZmlsZSI6IkM6XFx4YW1wcFxcaHRkb2NzXFxDUk1BUFBcXE1vZGVsXFxCRC5waHAiLCJsaW5lIjo5NSwiZnVuY3Rpb24iOiJleGVjdXRlIiwiY2xhc3MiOiJQRE9TdGF0ZW1lbnQiLCJ0eXBlIjoiLT4iLCJhcmdzIjpbXX0seyJmaWxlIjoiQzpcXHhhbXBwXFxodGRvY3NcXENSTUFQUFxcTW9kZWxcXFVzdWFyaW9zXFxhZGRVcGRhdGVDaXVkYWQucGhwIiwibGluZSI6MTcsImZ1bmN0aW9uIjoiZXhlYyIsImNsYXNzIjoiQkQiLCJ0eXBlIjoiLT4iLCJhcmdzIjpbIklOU0VSVCBJTlRPIGNpdWRhZHMgKGNpdWRhZCwgaWRfZXN0YWRvKSBWQUxVRVMgKCdmZHNnc2ZkJywgMSkiLCJJTlNFUlQiXX1d', 1, '2020-08-21 16:15:22'),
+(2, 1, 'success', 'Operacion INSERT realizada con exito..!', '1000', 1, 'INSERT', 'IklOU0VSVCBJTlRPIGNpdWRhZCAoY2l1ZGFkLCBpZF9lc3RhZG8pIFZBTFVFUyAoJ2Zkc2dzZmQnLCAxKSI=', 1, '2020-08-21 16:21:52'),
+(3, 0, 'error', 'SQLSTATE[42S02]: Base table or view not found: 1146 Table \"crm_app.ciudadz\" doesn\"t exist', '42S02', 0, 'DELETE', 'W3siZmlsZSI6IkM6XFx4YW1wcFxcaHRkb2NzXFxDUk1BUFBcXE1vZGVsXFxCRC5waHAiLCJsaW5lIjo5NSwiZnVuY3Rpb24iOiJleGVjdXRlIiwiY2xhc3MiOiJQRE9TdGF0ZW1lbnQiLCJ0eXBlIjoiLT4iLCJhcmdzIjpbXX0seyJmaWxlIjoiQzpcXHhhbXBwXFxodGRvY3NcXENSTUFQUFxcTW9kZWxcXFVzdWFyaW9zXFxEZWxldGVDaXVkYWQucGhwIiwibGluZSI6MTAsImZ1bmN0aW9uIjoiZXhlYyIsImNsYXNzIjoiQkQiLCJ0eXBlIjoiLT4iLCJhcmdzIjpbImRlbGV0ZSBmcm9tIGNpdWRhZHogd2hlcmUgaWQgPSAyMyIsIkRFTEVURSJdfV0=', 1, '2020-08-21 16:35:01'),
+(4, 1, 'success', 'Operacion DELETE realizada con exito..!', '1000', 1, 'DELETE', 'ImRlbGV0ZSBmcm9tIGNpdWRhZCB3aGVyZSBpZCA9IDIzIg==', 1, '2020-08-21 16:35:26'),
+(5, 1, 'success', 'Operacion INSERT realizada con exito..!', '1000', 1, 'INSERT', 'InVwZGF0ZSBjaXVkYWQgc2V0IGNpdWRhZCA9ICdOZXcgWW9yaycgd2hlcmUgaWQgPSAxIg==', 1, '2020-08-21 16:36:37'),
+(6, 1, 'success', 'Operacion UPDATE realizada con exito..!', '1000', 1, 'UPDATE', 'InVwZGF0ZSBjaXVkYWQgc2V0IGNpdWRhZCA9ICdOZXcgWW9yayBDaXR5JyB3aGVyZSBpZCA9IDEi', 1, '2020-08-21 16:38:35');
 
 -- --------------------------------------------------------
 
@@ -280,13 +278,6 @@ CREATE TABLE `notas` (
   `fecha_modificado` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---
--- Volcado de datos para la tabla `notas`
---
-
-INSERT INTO `notas` (`id_nota`, `titulo`, `descripcion`, `ss_persona`, `fecha_registro`, `creado_por`, `modificado_por`, `fecha_modificado`) VALUES
-(5, 'Seguimiento de Venta', 'gdsfgfdg', '123456789', '2020-07-12 15:22:40', 3, NULL, NULL);
-
 -- --------------------------------------------------------
 
 --
@@ -302,8 +293,16 @@ CREATE TABLE `notificaciones` (
   `fecha_creacion` datetime NOT NULL,
   `creado_por` int(11) NOT NULL,
   `estado` varchar(20) NOT NULL DEFAULT 'PENDIENTE',
-  `ss_persona` varchar(20) DEFAULT NULL
+  `ss_persona` varchar(20) DEFAULT NULL,
+  `notify` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Volcado de datos para la tabla `notificaciones`
+--
+
+INSERT INTO `notificaciones` (`id_notificacion`, `titulo`, `detalle`, `encargado`, `tipo_usuario`, `fecha_creacion`, `creado_por`, `estado`, `ss_persona`, `notify`) VALUES
+(1, 'PASAR LEAD A CLIENTE', 'El lead Jhony Cage, identificado con SS: 12365987546 acaba de adquirir un producto y esta listo para ser cliente. \nAsesor asignado: Pedro perez.', NULL, 2, '2020-08-17 19:43:03', 3, 'PENDIENTE', '12365987546', 1);
 
 -- --------------------------------------------------------
 
@@ -353,7 +352,10 @@ CREATE TABLE `pagos_producto` (
 --
 
 INSERT INTO `pagos_producto` (`id_pago`, `numero_cuota`, `fecha_pago_realizado`, `valor_cuota`, `id_estado_pago`, `fecha_pago`, `id_producto`, `creado_por`, `fecha_creacion`, `actualizado_por`, `fecha_actualizado`) VALUES
-(1, 1, NULL, 2000000, 1, '2020-05-12', 1, 1, '2020-05-12 03:05:49', 1, '2020-07-22 15:16:09');
+(1, 1, NULL, 1000000, 1, '2020-09-18', 1, 3, '2020-08-17 19:43:03', NULL, NULL),
+(2, 2, NULL, 1000000, 1, '2020-10-16', 1, 3, '2020-08-17 19:43:03', NULL, NULL),
+(3, 3, NULL, 1500000, 1, '2020-11-17', 1, 3, '2020-08-17 19:43:03', NULL, NULL),
+(4, 4, NULL, 500000, 1, '2020-12-17', 1, 3, '2020-08-17 19:43:03', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -383,7 +385,7 @@ CREATE TABLE `personas` (
 --
 
 INSERT INTO `personas` (`id`, `nombres`, `apellidos`, `telefonos`, `direccion`, `ss`, `dob`, `email`, `asesor`, `cita`, `hora_cita`, `id_ciudad`, `id_estado`, `fecha_cracion`) VALUES
-(1, 'Mauricio', 'Herrera Isaac', '3156371573, 3232058854', 'calle 67, # 26-42', '123456789', '1987-03-31', 'smaurville@gmail.com', 3, '2020-03-19', '2:00 PM', 1, 1, '2020-04-16 15:18:06');
+(1, 'Jhony', 'Cage', '236598754', 'Evergreen St 53 236', '12365987546', '1987-08-17', 'mherrera10@misena.edu.co', 3, '2020-08-19', '4:00 PM', 1, 1, '2020-08-17 15:49:08');
 
 -- --------------------------------------------------------
 
@@ -412,8 +414,7 @@ CREATE TABLE `producto` (
 --
 
 INSERT INTO `producto` (`id_producto`, `banco`, `titular`, `id_tipo_cuenta`, `numero_ruta`, `numero_cuenta`, `valor`, `numero_cuotas`, `ss_persona`, `fecha_registro`, `id_tipo_producto`, `estado`, `has_contract`) VALUES
-(1, 'BANCOLOMBIA', 'ANDRES MAURICIO HERRERA ISAAC', 1, 'calle 67, # 26-42', '899-956-6451-11', 2000000, 1, '123456789', '2020-04-14 16:30:03', 1, 'Activo', 0),
-(2, 'BANCOLOMBIA', 'PEDRO PEREZ', 2, '8974562132', '899-956-6451-11', 1500000, 2, '123456789', '2020-05-04 18:09:48', 1, 'Activo', 0);
+(1, 'BANCOLOMBIA', 'JHONY CAGE', 2, '123456789', '899-9564-5111', 4000000, 4, '12365987546', '2020-08-17 19:43:03', 1, '', 0);
 
 -- --------------------------------------------------------
 
@@ -432,7 +433,7 @@ CREATE TABLE `queues` (
 --
 
 INSERT INTO `queues` (`id`, `job`, `exec`) VALUES
-(1, 'java -jar C:\\xampp\\htdocs\\CRMAPP\\Model\\PDFLibrary\\dist\\Mailer.jar mauricio.herrera.ajc@gmail.com Nikol0822 smaurville@gmail.com smtp.gmail.com true 587 true Contrato_123456789 123456789', 1);
+(1, 'java -jar C:\\xampp\\htdocs\\CRMAPP\\Model\\PDFLibrary\\dist\\Mailer.jar mauricio.herrera.ajc@gmail.com Nikol0822 mherrera10@misena.edu.co smtp.gmail.com true 587 true Carta_12365987546 12365987546', 0);
 
 -- --------------------------------------------------------
 
@@ -493,16 +494,6 @@ CREATE TABLE `recordatorios` (
   `complete_to` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---
--- Volcado de datos para la tabla `recordatorios`
---
-
-INSERT INTO `recordatorios` (`id_recordatorio`, `_from`, `_to`, `descripcion`, `vence`, `fecha_creacion`, `estado`, `creado_por`, `actualizado_por`, `fecha_actualizado`, `ss_persona`, `pending_to`, `complete_to`) VALUES
-(1, 1, 3, 'Prueba desde admin', '2020-06-11', '2020-06-09 14:32:53', 'Cancelado', 1, 3, '2020-06-09 14:36:19', '123456789', NULL, NULL),
-(2, 3, 3, 'dgssdfgfdg', '2020-07-09', '2020-07-07 18:49:26', 'Completado', 3, 3, '2020-07-12 15:47:02', '123456789', NULL, NULL),
-(3, 3, 4, 'Prueba recordatorio', '2020-07-13', '2020-07-12 15:34:26', 'Completado', 3, 1, '2020-08-17 11:26:16', '123456789', NULL, NULL),
-(5, 1, 0, 'Prueba rec para todos', '2020-07-22', '2020-07-22 09:51:14', 'Completado', 1, 3, '2020-07-22 12:06:36', '123456789', NULL, '1,4,3,');
-
 -- --------------------------------------------------------
 
 --
@@ -519,14 +510,6 @@ CREATE TABLE `recursos` (
   `create_by` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---
--- Volcado de datos para la tabla `recursos`
---
-
-INSERT INTO `recursos` (`id_recurso`, `descripcion`, `ruta`, `ext`, `fecha_registro`, `nombre_archivo`, `create_by`) VALUES
-(5, 'prueba', '../RecursosVentas/', 'pdf', '2020-04-18 10:03:36', 'prueba.pdf', NULL),
-(6, 'sfdsdgdsfg', '../RecursosVentas/', 'xlsx', '2020-05-04 18:34:16', 'sfdsdgdsfg.xlsx', 1);
-
 -- --------------------------------------------------------
 
 --
@@ -542,14 +525,6 @@ CREATE TABLE `resp_disputas` (
   `bureau` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Volcado de datos para la tabla `resp_disputas`
---
-
-INSERT INTO `resp_disputas` (`id_rspuesta`, `id_disputa`, `fecha_respuesta`, `respuesta`, `create_by`, `bureau`) VALUES
-(1, 1, '2020-08-17 10:55:30', 'ACTUALIZADA', 1, 'EXP'),
-(2, 1, '2020-08-17 11:16:57', 'NO ACTUALIZADA', 1, 'EQF');
-
 -- --------------------------------------------------------
 
 --
@@ -557,22 +532,23 @@ INSERT INTO `resp_disputas` (`id_rspuesta`, `id_disputa`, `fecha_respuesta`, `re
 --
 
 CREATE TABLE `sender_mail_config` (
-  `id_cong` int(11) NOT NULL,
+  `id_config` int(11) NOT NULL,
   `email_sender` varchar(50) NOT NULL,
   `pass` varchar(50) NOT NULL,
   `stmp_port` varchar(10) NOT NULL,
   `smtp_host` varchar(30) NOT NULL,
   `smtp_auth` varchar(10) NOT NULL,
   `smtp_enable` varchar(10) NOT NULL,
-  `create_at` datetime NOT NULL DEFAULT current_timestamp()
+  `create_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `create_by` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Volcado de datos para la tabla `sender_mail_config`
 --
 
-INSERT INTO `sender_mail_config` (`id_cong`, `email_sender`, `pass`, `stmp_port`, `smtp_host`, `smtp_auth`, `smtp_enable`, `create_at`) VALUES
-(1, 'mauricio.herrera.ajc@gmail.com', 'Nikol0822', '587', 'smtp.gmail.com', 'true', 'true', '2020-08-17 12:27:28');
+INSERT INTO `sender_mail_config` (`id_config`, `email_sender`, `pass`, `stmp_port`, `smtp_host`, `smtp_auth`, `smtp_enable`, `create_at`, `create_by`) VALUES
+(1, 'mauricio.herrera.ajc@gmail.com', 'Nikol0822', '587', 'smtp.gmail.com', 'true', 'true', '2020-08-20 17:45:07', 1);
 
 -- --------------------------------------------------------
 
@@ -612,8 +588,7 @@ CREATE TABLE `situacion_personas` (
 --
 
 INSERT INTO `situacion_personas` (`id_situacion`, `id_persona`, `fecha_registro`) VALUES
-(1, 1, '2020-03-18 13:59:53'),
-(2, 1, '2020-07-13 09:48:25');
+(1, 1, '2020-08-17 15:49:08');
 
 -- --------------------------------------------------------
 
@@ -726,7 +701,7 @@ CREATE TABLE `usuarios` (
 
 INSERT INTO `usuarios` (`id`, `tipo_doc`, `documento`, `nombres`, `apellidos`, `telefono`, `id_tipo_usuario`, `coach`, `franquicia`, `password`, `fecha_registro`, `foto`, `ext`) VALUES
 (1, 1, '1113626301', 'Mauricio', 'Hererra', '1113626301', 1, NULL, NULL, '456', '2020-03-04 16:08:49', NULL, NULL),
-(3, 1, '123456', 'Pedro', 'perez', '3232058854', 2, NULL, NULL, '123456', '2020-03-17 13:51:31', NULL, NULL),
+(3, 1, '123456', 'Pedro Andres', 'perez', '3232058854', 2, NULL, NULL, '123456', '2020-03-17 13:51:31', NULL, NULL),
 (4, 1, '1234567890', 'Marcela', 'Garzon', '--', 1, NULL, NULL, '123456', '2020-06-11 16:17:21', NULL, NULL);
 
 --
@@ -750,7 +725,8 @@ ALTER TABLE `analisis_persona`
 -- Indices de la tabla `ciudad`
 --
 ALTER TABLE `ciudad`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_estado` (`id_estado`);
 
 --
 -- Indices de la tabla `disputas`
@@ -769,8 +745,7 @@ ALTER TABLE `documentos`
 -- Indices de la tabla `estado`
 --
 ALTER TABLE `estado`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `id_ciudad` (`id_ciudad`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indices de la tabla `estados`
@@ -789,6 +764,12 @@ ALTER TABLE `estados_de_pago`
 --
 ALTER TABLE `estados_personas`
   ADD PRIMARY KEY (`id_estado`,`id_persona`,`fecha_registro`);
+
+--
+-- Indices de la tabla `logs_crmapp`
+--
+ALTER TABLE `logs_crmapp`
+  ADD PRIMARY KEY (`id_log`);
 
 --
 -- Indices de la tabla `log_pagos_producto`
@@ -874,7 +855,7 @@ ALTER TABLE `resp_disputas`
 -- Indices de la tabla `sender_mail_config`
 --
 ALTER TABLE `sender_mail_config`
-  ADD PRIMARY KEY (`id_cong`);
+  ADD PRIMARY KEY (`id_config`);
 
 --
 -- Indices de la tabla `situacion`
@@ -938,25 +919,25 @@ ALTER TABLE `analisis_persona`
 -- AUTO_INCREMENT de la tabla `ciudad`
 --
 ALTER TABLE `ciudad`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT de la tabla `disputas`
 --
 ALTER TABLE `disputas`
-  MODIFY `id_disputa` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_disputa` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `documentos`
 --
 ALTER TABLE `documentos`
-  MODIFY `id_documento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `id_documento` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `estado`
 --
 ALTER TABLE `estado`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `estados`
@@ -971,6 +952,12 @@ ALTER TABLE `estados_de_pago`
   MODIFY `id_estado_pago` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
+-- AUTO_INCREMENT de la tabla `logs_crmapp`
+--
+ALTER TABLE `logs_crmapp`
+  MODIFY `id_log` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
 -- AUTO_INCREMENT de la tabla `log_pagos_producto`
 --
 ALTER TABLE `log_pagos_producto`
@@ -980,13 +967,13 @@ ALTER TABLE `log_pagos_producto`
 -- AUTO_INCREMENT de la tabla `notas`
 --
 ALTER TABLE `notas`
-  MODIFY `id_nota` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id_nota` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `notificaciones`
 --
 ALTER TABLE `notificaciones`
-  MODIFY `id_notificacion` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_notificacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `notificacion_personas`
@@ -1004,7 +991,7 @@ ALTER TABLE `pagos_personas`
 -- AUTO_INCREMENT de la tabla `pagos_producto`
 --
 ALTER TABLE `pagos_producto`
-  MODIFY `id_pago` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_pago` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `personas`
@@ -1016,7 +1003,7 @@ ALTER TABLE `personas`
 -- AUTO_INCREMENT de la tabla `producto`
 --
 ALTER TABLE `producto`
-  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `queues`
@@ -1034,25 +1021,25 @@ ALTER TABLE `razon_disputas`
 -- AUTO_INCREMENT de la tabla `recordatorios`
 --
 ALTER TABLE `recordatorios`
-  MODIFY `id_recordatorio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id_recordatorio` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `recursos`
 --
 ALTER TABLE `recursos`
-  MODIFY `id_recurso` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id_recurso` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `resp_disputas`
 --
 ALTER TABLE `resp_disputas`
-  MODIFY `id_rspuesta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_rspuesta` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `sender_mail_config`
 --
 ALTER TABLE `sender_mail_config`
-  MODIFY `id_cong` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_config` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `situacion`
@@ -1088,7 +1075,7 @@ ALTER TABLE `tipo_usuario`
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
