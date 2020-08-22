@@ -15,3 +15,19 @@
 .upPays{
     font-size: 20px;
 }
+
+#div_notfy {
+    position: absolute;
+    top: 40%; /* Buscamos el centro horizontal (relativo) del navegador */
+    left: 60%; /* Buscamos el centro vertical (relativo) del navegador */
+    width: 35%; /* Definimos el ancho del objeto a centrar */
+    height: 100px; /* Definimos el alto del objeto a centrar */
+    margin-top: -200px; /* Restamos la mitad de la altura del objeto con un margin-top */
+    margin-left: -300px; /* Restamos la mitad de la anchura del objeto con un margin-left */
+    border: solid 2px #fff;
+    z-index: 999999;
+    background-color: #00a65a;
+    border-radius: 20px;
+    text-align: center;
+    display: none;
+}

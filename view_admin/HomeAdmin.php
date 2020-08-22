@@ -96,9 +96,28 @@ $con->desconectar();
 
     </head>
     <body class="hold-transition skin-blue sidebar-mini">
+
         <!-- Site wrapper -->
         <div class="wrapper">
+            <div id="div_notfy" class="content">
+                <div>
+                    <div class="icon">
+                        <i class="fa fa-bell icon_bell" style="font-size: 30px;color: white;" ></i>
+                    </div>
 
+                    <div id="titulo" style="margin-top: 10px;font-size: 20px;font-weight: bold;color: white;">
+
+                    </div>   
+
+                    <div id="detalle" style="margin-top: 10px;margin-bottom: 10px;font-size: 15px;color: white;text-align: justify;">
+
+                    </div> 
+
+                    <div class="modal-footer">
+                        <button type="button" id="setRead" data-id="" class="btn btn-default">Cerrar</button>
+                    </div>
+                </div>
+            </div>
             <!-- Left side column. contains the sidebar -->
             <!-- Header -->
             <?php include_once '../view_admin//HeaderAdmin.php'; ?>
@@ -463,15 +482,12 @@ $con->desconectar();
                 </section>
                 <!-- /.content -->
             </div>
-            <!-- /.content-wrapper -->         
+            <!-- /.content-wrapper -->   
+
             <?php include_once '../view_admin//FooterAdmin.php'; ?>
         </div>
         <!-- ./wrapper -->
         <!-- jQuery 3 -->
-
-
-
-
         <script src="../bower_components/jquery/dist/jquery.min.js"></script>
         <!-- Bootstrap 3.3.7 -->
         <script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
@@ -493,14 +509,13 @@ $con->desconectar();
         <script src="../dist/js/demo.js"></script>
         <script src="../dist/js/notify.js" type="text/javascript"></script>
         <script src="../dist/js/funciones_usuario.js"></script>
-
+        <!--<script src="../dist/js/easyNotify.js" type="text/javascript"></script>-->
         <script>
+
 
             $(document).ready(function () {
                 var titulos = new Array();
                 var valores = new Array();
-
-
                 $('.sidebar-menu').tree();
 
             })
@@ -517,6 +532,83 @@ $con->desconectar();
                     format: 'yyyy-mm-dd'
                 })
             })
+
+            var updateNotification = function () {
+                setTimeout(redireccionarPagina('ListarNotificaciones.php?token=UEVORElFTlRF'), 3000);
+            };
+
+            var bellAnimation = function () {
+                $(".icon_bell").removeClass("fa-bell").addClass("fa-bell-o");
+                setTimeout(function () {
+                    $(".icon_bell").removeClass("fa-bell-o").addClass("fa-bell");
+                }, 500);
+            }
+
+            function redireccionarPagina(pagina) {
+                window.location = pagina;
+            }
+
+            function getNotifications() {
+
+                $.ajax({
+                    type: 'POST',
+                    url: "../Model/Utilidades/getNotifications.php",
+                    dataType: 'json',
+                    data: {},
+                    success: function (response) {
+//                        console.log(response);
+                        if (response.count > 0) {
+                            $("#titulo").text(response.titulo);
+                            $("#detalle").text(response.detalle);
+                            $("#div_notfy").css("display", "block");
+                            $("#setRead").attr("data-id", response.id);
+                            setInterval(bellAnimation, 1000);
+
+
+                            /*var myImg = "../dist/img/avatar2.png";
+                             var options = {
+                             title: response.titulo,
+                             options: {
+                             body: response.detalle,
+                             icon: myImg,
+                             lang: 'en-ES',
+                             onClick: updateNotification
+                             }
+                             };*/
+//                            console.log(options);
+//                            $("#easyNotify").easyNotify(options);
+                        }
+                        setTimeout(getNotifications, 20000);
+                    }
+                });
+            }
+
+
+            $("#setRead").click(function () {
+                var data = new FormData();
+                data.append("id", $(this).data("id"));
+                $.ajax({
+                    type: 'POST',
+                         url: "../Model/Utilidades/updateNotifications.php",
+                    data: data,
+                    dataType: 'json',
+                    contentType: false,
+                    processData: false,
+                    cache: false,
+                    success: function (response) {
+                        if (response === "ok") {
+                             setTimeout(redireccionarPagina('ListarNotificaciones.php?token=UEVORElFTlRF'), 3000);
+                        } else {
+                            showAlert("Ocurrio un error", "error");
+                        }
+                    }
+                });
+            });
+
+            setTimeout(getNotifications, 2000);
+
+
+            //Notificaciones
         </script>
     </body>
 </html>

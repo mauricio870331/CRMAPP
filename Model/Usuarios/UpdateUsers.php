@@ -28,12 +28,12 @@ $SQL_UPDATE = "UPDATE usuarios set tipo_doc = " . $_POST['tipo_doc'] . " ,docume
         . "nombres = '" . $_POST['nombres'] . "',apellidos = '" . $_POST['apellidos'] . "',telefono = '" . $_POST['telefonos'] . "'"
         . ",id_tipo_usuario = " . $_POST['id_tipo_usuario'] . ",coach = " . $coach . ",password = '" . $_POST['pass'] . "'" . $newFoto . " where id = " . $_POST['id'];
 
-
+//echo $SQL_UPDATE;die;
 
 $res = $con->exec($SQL_UPDATE);
 
 
-if ($res == 1) {
+if ($res > 0) {
     echo json_encode("ok");
 } else {
     echo json_encode($res);

@@ -50,17 +50,34 @@
                 </ul>
             </li>  
 
-<!--            <li class="treeview">
+
+            <li class="treeview">
                 <a href="javascript:void(0);">
-                    <i class="fa fa-money"></i> <span>Pagos</span>
+                    <i class="fa fa-gears"></i> <span>Configuración</span>
                     <span class="pull-right-container">
                         <i class="fa fa-angle-left pull-right"></i>
                     </span>
                 </a>
-                <ul class="treeview-menu">
-                    <li><a href="ListadoDePagos.php"><i class="fa fa-circle-o"></i> Historial de Pagos</a></li>                    
+                <ul class="treeview-menu">                   
+                    <li><a href="ListarEstados.php"><i class="fa fa-circle-o"></i> Listado de Estados</a></li>
+                    <li><a href="CredencialesEmail.php"><i class="fa fa-circle-o"></i>Config. Para Email</a></li>
                 </ul>
-            </li>  -->
+
+            </li>  
+
+
+
+            <!--            <li class="treeview">
+                            <a href="javascript:void(0);">
+                                <i class="fa fa-money"></i> <span>Pagos</span>
+                                <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            <ul class="treeview-menu">
+                                <li><a href="ListadoDePagos.php"><i class="fa fa-circle-o"></i> Historial de Pagos</a></li>                    
+                            </ul>
+                        </li>  -->
 
         </ul>
     </section>

@@ -50,21 +50,7 @@ $documentos = array(
         <link rel="stylesheet" href="../bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
         <link rel="stylesheet" href="../dist/css/mycss.css" /> 
         <!-- Google Font -->
-        <link rel="stylesheet" href="../dist/css/AllFonts.css">
-        <style>
-            .example-modal .modal {
-                position: relative;
-                top: auto;
-                bottom: auto;
-                right: auto;
-                left: auto;
-                display: block;
-                z-index: 1;
-            }
-            .example-modal .modal {
-                background: transparent !important;
-            }
-        </style>
+        <link rel="stylesheet" href="../dist/css/AllFonts.css">        
     </head>
     <body class="hold-transition skin-blue sidebar-mini">
         <div class="wrapper">        

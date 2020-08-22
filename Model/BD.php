@@ -53,10 +53,9 @@ class BD {
         return $this->rs;
     }
 
-    
-     public function login($query, $fields = array(),$opc = false) {        
-        $this->stm = $this->con->prepare($query);     
-        $this->stm->execute([$fields[0],$fields[1]]);
+    public function login($query, $fields = array(), $opc = false) {
+        $this->stm = $this->con->prepare($query);
+        $this->stm->execute([$fields[0], $fields[1]]);
         if ($opc) {
             $this->rs = $this->stm->fetchAll(PDO::FETCH_OBJ);
         } else {
@@ -64,8 +63,7 @@ class BD {
         }
         return $this->rs;
     }
-    
-    
+
     public function findAll2($query, $opc = false) {
         $this->stm = $this->con->prepare($query);
         $this->stm->execute();
@@ -89,16 +87,33 @@ class BD {
         return $this->rs;
     }
 
-    public function exec($query) {
+    public function exec($query, $operacion = "") {
+
         try {
             $this->con->beginTransaction();
             $this->stm = $this->con->prepare($query);
             $this->stm->execute();
             $this->con->commit();
-            return $this->stm->rowCount();
+            return array(
+                "code" => 1,
+                "message_code" => "success",
+                "msn" => "Operacion " . $operacion . " realizada con exito..!",
+                "code_mysql" => "1000",
+                "row_count" => $this->stm->rowCount(),
+                "operacion" => $operacion,
+                "trace" => base64_encode(json_encode($query))
+            );
         } catch (Exception $ex) {
             $this->con->rollBack();
-            return $ex;
+            return array(
+                "code" => 0,
+                "message_code" => "error",
+                "msn" => str_replace("'", "\"", $ex->getMessage()),
+                "code_mysql" => $ex->getCode(),
+                "row_count" => 0,
+                "operacion" => $operacion,
+                "trace" => base64_encode(json_encode($ex->getTrace()))
+            );
         }
     }
 

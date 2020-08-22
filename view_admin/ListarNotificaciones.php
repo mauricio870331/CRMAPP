@@ -56,14 +56,14 @@ $hoy = date("Y-m-d");
 
             <!-- Left side column. contains the sidebar -->
             <!-- Header -->
-            <?php include_once '../view_asesor/HeaderAsesor.php'; ?>
+            <?php include_once '../view_admin/HeaderAdmin.php'; ?>
             <!-- =============================================== -->
 
             <!-- =============================================== -->
 
             <!-- Left side column. contains the sidebar -->
             <!-- Menu -->
-            <?php include_once '../view_asesor/MenuAsesor.php'; ?>
+            <?php include_once '../view_admin/MenuAdmin.php'; ?>
             <!-- =============================================== -->
 
             <!-- Content Wrapper. Contains page content -->
@@ -78,9 +78,9 @@ $hoy = date("Y-m-d");
                 <!-- Main content -->
                 <section class="content">
                     <div class="row">
-<!--                        <div class="col-xs-12">
-                            <button type="button" class="btn btn-block btn-primary" style="width: 10%;margin-bottom: 1%;"  data-toggle="modal" data-target="#modal-recordatorio" >Nuevo</button>
-                        </div>-->
+                        <!--                        <div class="col-xs-12">
+                                                    <button type="button" class="btn btn-block btn-primary" style="width: 10%;margin-bottom: 1%;"  data-toggle="modal" data-target="#modal-recordatorio" >Nuevo</button>
+                                                </div>-->
                     </div>
                     <div class="row">
                         <div class="col-xs-12">                   
@@ -182,7 +182,7 @@ $hoy = date("Y-m-d");
                 </section>
                 <!-- /.content -->
             </div>
-            <?php include './FooterASesor.php'; ?>
+            <?php include '../view_admin/FooterAdmin.php'; ?>
 
         </div>
         <!-- ./wrapper -->
